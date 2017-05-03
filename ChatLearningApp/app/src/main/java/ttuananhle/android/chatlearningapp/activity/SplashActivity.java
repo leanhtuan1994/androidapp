@@ -1,16 +1,12 @@
-package ttuananhle.android.chatlearningapp;
+package ttuananhle.android.chatlearningapp.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.os.SystemClock;
-import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import java.util.concurrent.TimeUnit;
-
-import es.dmoral.toasty.Toasty;
 
 /**
  * Created by leanh on 5/3/2017.

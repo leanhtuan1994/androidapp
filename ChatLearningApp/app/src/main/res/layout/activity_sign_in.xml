@@ -9,7 +9,7 @@
     android:paddingRight="50dp"
     android:paddingLeft="50dp"
     android:layout_weight="1"
-    tools:context="ttuananhle.android.chatlearningapp.SignInActivity">
+    tools:context="ttuananhle.android.chatlearningapp.activity.SignInActivity">
 
     <ImageView
         android:layout_marginTop="64dp"

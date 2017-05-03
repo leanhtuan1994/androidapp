@@ -2,10 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="ttuananhle.android.chatlearningapp.MainActivity">
+    tools:context="ttuananhle.android.chatlearningapp.activity.MainActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:background="@color/colorMain"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+    </android.support.v7.widget.Toolbar>
 
     <FrameLayout
         android:id="@+id/frame_container"
@@ -23,7 +31,7 @@
         app:bb_inActiveTabColor="@color/colorInActiveTab"
         app:bb_activeTabColor="@color/colorActiveTab"
         app:bb_badgesHideWhenActive="true"
-        app:bb_behavior="underNavbar"
+        app:bb_behavior="iconsOnly"
         app:bb_tabXmlResource="@xml/bottombar_tabs" />
 
 </LinearLayout>

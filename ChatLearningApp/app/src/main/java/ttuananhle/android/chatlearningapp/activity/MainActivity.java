@@ -1,7 +1,9 @@
-package ttuananhle.android.chatlearningapp;
+package ttuananhle.android.chatlearningapp.activity;
 
 import android.content.Intent;
 import android.support.annotation.IdRes;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,13 +16,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.BottomBarTab;
-import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 
 import es.dmoral.toasty.Toasty;
+import ttuananhle.android.chatlearningapp.R;
+import ttuananhle.android.chatlearningapp.fragment.ContactsFragment;
+import ttuananhle.android.chatlearningapp.fragment.MessagesFragment;
 import ttuananhle.android.chatlearningapp.model.User;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_SIGN_IN_USER = 1000;
     public static final int REQUEST_CODE_SIGN_UP_USER = 2000;
 
-    private BottomBar bottomBar;
+    private BottomBar       bottomBar;
+    private FragmentManager fragmentManager;
 
     // create firebase Auth, current user
     private FirebaseAuth      fireAuth;
@@ -47,7 +50,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // init bottom bar
+        initFragment();
         initBottomBar();
+
 
         // init firebase
         initFirebase();
@@ -61,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initBottomBar(){
         bottomBar = (BottomBar) this.findViewById(R.id.bottomBar);
+        bottomBar.setDefaultTab(R.id.tab_messages);
 
         bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
@@ -71,11 +77,30 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, SignInActivity.class);
                     startActivity(intent);
                     finish();
+                } else if ( tabId == R.id.tab_contacts ){
+                    ContactsFragment contactsFragment = new ContactsFragment();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.frame_container, contactsFragment);
+                    fragmentTransaction.commit();
+                } else if ( tabId == R.id.tab_messages){
+                    MessagesFragment messagesFragment = new MessagesFragment();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.frame_container, messagesFragment);
+                    fragmentTransaction.commit();
                 }
             }
         });
     }
 
+    private void initFragment(){
+        fragmentManager = getSupportFragmentManager();
+
+        //Set default fragment
+        MessagesFragment messagesFragment = new MessagesFragment();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame_container, messagesFragment);
+        fragmentTransaction.commit();
+    }
     /**
      * init Firebase
      */

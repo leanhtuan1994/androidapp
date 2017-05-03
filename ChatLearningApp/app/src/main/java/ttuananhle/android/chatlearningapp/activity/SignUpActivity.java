@@ -1,4 +1,4 @@
-package ttuananhle.android.chatlearningapp;
+package ttuananhle.android.chatlearningapp.activity;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -22,9 +22,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import es.dmoral.toasty.Toasty;
+import ttuananhle.android.chatlearningapp.R;
 import ttuananhle.android.chatlearningapp.model.User;
 
 public class SignUpActivity extends AppCompatActivity {
