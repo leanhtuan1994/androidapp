@@ -1,6 +1,7 @@
 package ttuananhle.android.chatlearningapp;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +9,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+
+import es.dmoral.toasty.Toasty;
 
 public class SignInActivity extends AppCompatActivity {
     private Button btnSignIn;
@@ -15,10 +24,15 @@ public class SignInActivity extends AppCompatActivity {
     private EditText edtSignInPassword;
     private TextView txtToSignUp;
 
+
+    private FirebaseAuth firebaseAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+
+        firebaseAuth = FirebaseAuth.getInstance();
 
         mappingView();
         listenerTextViewClick();
@@ -32,6 +46,26 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i("Click", "btnSignIn Clicked");
+                try {
+                    String email = edtSignInEmail.getText().toString();
+                    String password = edtSignInPassword.getText().toString();
+
+                    firebaseAuth.signInWithEmailAndPassword( email, password)
+                            .addOnCompleteListener(SignInActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()){
+                                        startActivity(new Intent(SignInActivity.this, MainActivity.class));
+                                        finish();
+                                    } else {
+                                        Toasty.error(SignInActivity.this,
+                                                task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+                } catch (Exception ex){
+                    Toast.makeText(SignInActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }

@@ -10,27 +10,24 @@ public class User {
     private String  email;
     private String  password;
     private String  photoUrl;
-    private boolean isTeacher;
 
     public User(){
 
     }
 
-    public User(String id, String name, String email, String password, boolean isTeacher) {
+    public User(String id, String name, String email, String password) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.isTeacher = isTeacher;
     }
 
-    public User(String id, String name, String email, String password, String photoUrl, boolean isTeacher) {
+    public User(String id, String name, String email, String password, String photoUrl) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.photoUrl = photoUrl;
-        this.isTeacher = isTeacher;
     }
 
     public String getId() {
@@ -71,13 +68,5 @@ public class User {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
-    }
-
-    public boolean isTeacher() {
-        return isTeacher;
-    }
-
-    public void setTeacher(boolean teacher) {
-        isTeacher = teacher;
     }
 }

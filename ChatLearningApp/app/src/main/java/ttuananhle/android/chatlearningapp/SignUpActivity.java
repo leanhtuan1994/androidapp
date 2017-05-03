@@ -1,6 +1,7 @@
 package ttuananhle.android.chatlearningapp;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +9,23 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import es.dmoral.toasty.Toasty;
+import ttuananhle.android.chatlearningapp.model.User;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -15,8 +33,12 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText edtSignUpEmail;
     private EditText edtSignUpPassword;
     private EditText edtSignUpName;
-    private Button btnSignUp;
+    private Button   btnSignUp;
 
+    private FirebaseAuth fireAuth;
+    private FirebaseDatabase fireData;
+    private DatabaseReference dataRef;
+    private FirebaseUser fireUser;
 
 
     @Override
@@ -25,6 +47,7 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         mappingView();
+        initFirebase();
         listenerTxtToSignInOnClick();
         listenerButtonSignUpOnClick();
     }
@@ -35,10 +58,91 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i("Click", "btnSignUp Clicked");
+
+                final String email    = edtSignUpEmail.getText().toString();
+                final String password = edtSignUpPassword.getText().toString();
+                final String name     = edtSignUpName.getText().toString();
+
+               fireAuth.createUserWithEmailAndPassword(email, password)
+                       .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
+                           @Override
+                           public void onComplete(@NonNull Task<AuthResult> task) {
+                               if ( task.isSuccessful()){
+                                   Log.i("SignUp", "createUserWithEmail:success");
+                                   fireUser = fireAuth.getCurrentUser();
+                                   saveFireUserOnData(fireUser.getUid(), name, email, password);
+
+                                   startActivity(new Intent(SignUpActivity.this, MainActivity.class));
+                                   finish();
+                               } else {
+
+                               }
+                           }
+                       });
             }
         });
     }
 
+    private void saveFireUserOnData(final String id, final String name, String email, String password){
+        User userSignUp = new User(id, name, email, password);
+
+        dataRef.child("Users").child(id).setValue(userSignUp);
+
+        UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
+                .setDisplayName(name)
+                .build();
+        fireUser.updateProfile(request)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.i("Users", "User profile updated.");
+                        } else {
+                            Toasty.error(SignUpActivity.this,
+                                    task.getException().getMessage().toString(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+        dataRef.child("Users").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.i("Users", "Added: " + dataSnapshot);
+
+                if( dataSnapshot.getValue(User.class).getId() == id) {
+
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Log.i("Users", "Changed: " + dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void initFirebase(){
+        fireAuth = FirebaseAuth.getInstance();
+        fireData = FirebaseDatabase.getInstance();
+        dataRef = fireData.getReference();
+    }
 
     private void listenerTxtToSignInOnClick(){
         txtToSignIn.setOnClickListener(new View.OnClickListener() {

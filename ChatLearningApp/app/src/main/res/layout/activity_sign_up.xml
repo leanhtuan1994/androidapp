@@ -21,7 +21,7 @@
     <EditText
         android:id="@+id/edtSignUpName"
         android:hint="Name"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="32dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <EditText
