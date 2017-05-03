@@ -18,10 +18,12 @@
     <com.roughike.bottombar.BottomBar
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="56dp"
         android:layout_alignParentBottom="true"
-        app:bb_inActiveTabColor="#90A4AE"
-        app:bb_activeTabColor="#00695C"
+        app:bb_inActiveTabColor="@color/colorInActiveTab"
+        app:bb_activeTabColor="@color/colorActiveTab"
+        app:bb_badgesHideWhenActive="true"
+        app:bb_behavior="underNavbar"
         app:bb_tabXmlResource="@xml/bottombar_tabs" />
 
 </LinearLayout>

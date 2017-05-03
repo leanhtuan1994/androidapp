@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.BottomBarTab;
 import com.roughike.bottombar.OnTabReselectListener;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,6 +24,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /***
+     * init Bottom Bar
+     */
     private void initBottomBar(){
         bottomBar = (BottomBar) this.findViewById(R.id.bottomBar);
 
@@ -32,5 +36,9 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
+
+
     }
 }

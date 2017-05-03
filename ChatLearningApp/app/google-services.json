@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "48415557581",
+    "firebase_url": "https://chatlearningapp-338d2.firebaseio.com",
+    "project_id": "chatlearningapp-338d2",
+    "storage_bucket": "chatlearningapp-338d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:48415557581:android:043f09065cc24de7",
+        "android_client_info": {
+          "package_name": "ttuananhle.android.chatlearningapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "48415557581-hjfv4fpvm92kjc8fq7qdodceiqpidr1g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLa3ORE9S7yRPLyDP6-Y6anGYHGJbsO-I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
