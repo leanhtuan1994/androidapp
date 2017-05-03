@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+
+    <tab
+        id="@+id/tab_messages"
+        icon="@drawable/ic_chat_black_24px"
+        title="Messages" />
+    <tab
+        id="@+id/tab_contacts"
+        icon="@drawable/ic_person_black_24px"
+        title="Contacts" />
+    <tab
+        id="@+id/tab_presentations"
+        icon="@drawable/ic_record_voice_over_black_24px"
+        title="Presentation" />
+
+    <tab
+        id="@+id/tab_settings"
+        icon="@drawable/ic_dehaze_black_24px"
+        title="Settings" />
+
+</tabs>
