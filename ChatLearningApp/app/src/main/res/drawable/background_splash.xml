@@ -5,7 +5,7 @@
 
     <item >
         
-        <bitmap android:src="@mipmap/logo_splash"
+        <bitmap android:src="@mipmap/boxchat_logo"
             android:gravity="center" />
 
     </item>
