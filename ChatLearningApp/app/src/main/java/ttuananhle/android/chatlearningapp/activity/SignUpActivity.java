@@ -59,26 +59,32 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.i("Click", "btnSignUp Clicked");
 
-                final String email    = edtSignUpEmail.getText().toString();
-                final String password = edtSignUpPassword.getText().toString();
-                final String name     = edtSignUpName.getText().toString();
+                try {
+                    final String email    = edtSignUpEmail.getText().toString();
+                    final String password = edtSignUpPassword.getText().toString();
+                    final String name     = edtSignUpName.getText().toString();
 
-               fireAuth.createUserWithEmailAndPassword(email, password)
-                       .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
-                           @Override
-                           public void onComplete(@NonNull Task<AuthResult> task) {
-                               if ( task.isSuccessful()){
-                                   Log.i("SignUp", "createUserWithEmail:success");
-                                   fireUser = fireAuth.getCurrentUser();
-                                   saveFireUserOnData(fireUser.getUid(), name, email, password);
+                    fireAuth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if ( task.isSuccessful()){
+                                        Log.i("SignUp", "createUserWithEmail:success");
+                                        fireUser = fireAuth.getCurrentUser();
+                                        saveFireUserOnData(fireUser.getUid(), name, email, password);
 
-                                   startActivity(new Intent(SignUpActivity.this, MainActivity.class));
-                                   finish();
-                               } else {
-
-                               }
-                           }
-                       });
+                                        startActivity(new Intent(SignUpActivity.this, MainActivity.class));
+                                        finish();
+                                    } else {
+                                        Toasty.error(SignUpActivity.this,
+                                                task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+                } catch (Exception ex){
+                    Toasty.error(SignUpActivity.this,
+                            ex.getMessage(), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -91,6 +97,7 @@ public class SignUpActivity extends AppCompatActivity {
         UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
                 .setDisplayName(name)
                 .build();
+
         fireUser.updateProfile(request)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override

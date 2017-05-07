@@ -65,7 +65,7 @@ public class SignInActivity extends AppCompatActivity {
                                 }
                             });
                 } catch (Exception ex){
-                    Toast.makeText(SignInActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
+                    Toasty.error(SignInActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         });

@@ -1,9 +1,11 @@
 package ttuananhle.android.chatlearningapp.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.IdRes;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +25,7 @@ import es.dmoral.toasty.Toasty;
 import ttuananhle.android.chatlearningapp.R;
 import ttuananhle.android.chatlearningapp.fragment.ContactsFragment;
 import ttuananhle.android.chatlearningapp.fragment.MessagesFragment;
+import ttuananhle.android.chatlearningapp.fragment.SettingsFragment;
 import ttuananhle.android.chatlearningapp.model.User;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference dataRef;
 
 
+
     private User currentUser;
 
 
@@ -50,14 +54,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // init bottom bar
-        initFragment();
+        initFragment(savedInstanceState);
         initBottomBar();
 
 
         // init firebase
         initFirebase();
         checkCurrentUserFirebase();
-
 
     }
 
@@ -68,38 +71,39 @@ public class MainActivity extends AppCompatActivity {
         bottomBar = (BottomBar) this.findViewById(R.id.bottomBar);
         bottomBar.setDefaultTab(R.id.tab_messages);
 
+
         bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
                 if(tabId == R.id.tab_settings){
-                    Log.i("Tab", "tab settings selected!");
-                    fireAuth.signOut();
-                    Intent intent = new Intent(MainActivity.this, SignInActivity.class);
-                    startActivity(intent);
-                    finish();
+                    SettingsFragment settingsFragment = new SettingsFragment();
+                    fragmentManager.beginTransaction().replace(R.id.frame_container, settingsFragment)
+                            .commit();
+
                 } else if ( tabId == R.id.tab_contacts ){
                     ContactsFragment contactsFragment = new ContactsFragment();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.frame_container, contactsFragment);
-                    fragmentTransaction.commit();
+                    fragmentManager.beginTransaction().replace(R.id.frame_container, contactsFragment)
+                            .commit();
                 } else if ( tabId == R.id.tab_messages){
                     MessagesFragment messagesFragment = new MessagesFragment();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.frame_container, messagesFragment);
-                    fragmentTransaction.commit();
+                    fragmentManager.beginTransaction().replace(R.id.frame_container, messagesFragment)
+                            .commit();
                 }
             }
         });
     }
 
-    private void initFragment(){
+    private void initFragment(Bundle savedInstanceState){
         fragmentManager = getSupportFragmentManager();
+        Fragment fragment = new MessagesFragment();
 
-        //Set default fragment
-        MessagesFragment messagesFragment = new MessagesFragment();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame_container, messagesFragment);
-        fragmentTransaction.commit();
+        if(savedInstanceState == null){
+            fragmentManager.beginTransaction().add(R.id.frame_container, fragment, "messages_fragment")
+                    .commit();
+        } else {
+            fragment = fragmentManager.findFragmentByTag("messages_fragment");
+        }
+
     }
     /**
      * init Firebase
@@ -120,8 +124,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         } else {
-
-
             dataRef.child("Users").addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -129,33 +131,23 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("USER", "fireUSER = " + fireUser.getUid());
                     Log.i("USER", "dataUSER = " + dataSnapshot.getKey());
 
+                    Log.i("DATA", dataSnapshot.toString());
                     if (dataSnapshot.getKey().equals(fireUser.getUid()) ){
                         currentUser = dataSnapshot.getValue(User.class);
-
                         Toasty.success(MainActivity.this,"Hi! " + currentUser.getName(), Toast.LENGTH_LONG).show();
+
                         return;
                     }
                 }
 
                 @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                }
-
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
                 @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                }
-
+                public void onChildRemoved(DataSnapshot dataSnapshot) {}
                 @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                }
-
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
+                public void onCancelled(DatabaseError databaseError) {}
             });
         }
     }

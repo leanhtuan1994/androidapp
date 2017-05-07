@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:focusable="true"
+    android:paddingLeft="18dp"
+    android:paddingRight="18dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp"
+    android:orientation="vertical"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_item_contact"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:civ_border_width="1dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_android_black_24px"/>
+
+    <TextView
+        android:id="@+id/txt_item_contact_name"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:layout_marginLeft="18dp"
+        android:text="name"
+        android:layout_toRightOf="@+id/img_item_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/txt_item_contact_email"
+        android:text="email"
+        android:textSize="16dp"
+        android:layout_marginLeft="18dp"
+        android:layout_toRightOf="@+id/img_item_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_item_contact_name"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:id="@+id/img_item_contact_check"
+        android:src="@drawable/ic_check_circle"
+        android:tint="@color/colorMain"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_width="18dp"
+        android:layout_height="18dp" />
+
+
+</RelativeLayout>

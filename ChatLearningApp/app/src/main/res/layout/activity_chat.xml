@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ttuananhle.android.chatlearningapp.activity.ChatActivity">
+
+
+    
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/btn_chat_send"
+            android:src="@drawable/ic_send"
+            android:tint="#E91E63"
+            android:clickable="true"
+            android:layout_centerVertical="true"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:paddingRight="10dp"
+            android:layout_alignParentEnd="true" />
+
+        <EditText
+            android:layout_marginRight="20dp"
+            android:id="@+id/txt_chat_input"
+            android:layout_toLeftOf="@+id/btn_chat_send"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+
+</RelativeLayout>
