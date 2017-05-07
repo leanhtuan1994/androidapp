@@ -1,5 +1,7 @@
 package ttuananhle.android.chatlearningapp.model;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by leanh on 5/7/2017.
  */
@@ -7,17 +9,17 @@ package ttuananhle.android.chatlearningapp.model;
 public class Setting {
     private int id;
     private String name;
-    private String imageUrl;
+    private Bitmap imgBitmap;
 
-    public Setting(int id, String name, String imageUrl) {
+    public Setting(int id, String name, Bitmap imgBitmap) {
         this.id = id;
         this.name = name;
-        this.imageUrl = imageUrl;
+        this.imgBitmap = imgBitmap;
     }
 
-    public Setting(String name, String imageUrl) {
+    public Setting(String name, Bitmap imgBitmap) {
         this.name = name;
-        this.imageUrl = imageUrl;
+        this.imgBitmap = imgBitmap;
     }
 
     public int getId() {
@@ -36,11 +38,11 @@ public class Setting {
         this.name = name;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public Bitmap getImageUrl() {
+        return imgBitmap ;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImageUrl(Bitmap imgBitmap) {
+        this.imgBitmap = imgBitmap;
     }
 }

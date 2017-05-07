@@ -48,6 +48,13 @@
                 android:inputType="textPassword" />
         </android.support.design.widget.TextInputLayout>
 
+        <CheckBox
+            android:id="@+id/cbSignIn_remember"
+            android:text="Keep me signed in"
+            android:layout_marginTop="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
         <Button
             android:id="@+id/btnSignIn"
             android:layout_width="match_parent"

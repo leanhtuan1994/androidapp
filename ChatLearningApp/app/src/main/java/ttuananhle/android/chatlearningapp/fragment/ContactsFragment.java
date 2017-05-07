@@ -26,7 +26,6 @@ import ttuananhle.android.chatlearningapp.R;
 import ttuananhle.android.chatlearningapp.activity.ChatActivity;
 import ttuananhle.android.chatlearningapp.adapter.DividerContactItemDecotation;
 import ttuananhle.android.chatlearningapp.adapter.RecyclerContactAdapter;
-import ttuananhle.android.chatlearningapp.interfacehelper.OnItemClickListener;
 import ttuananhle.android.chatlearningapp.model.User;
 
 /**
@@ -80,7 +79,7 @@ public class ContactsFragment extends Fragment {
     private void initRecyclerContactView(final View view){
         recyclerContactView = (RecyclerView) view.findViewById(R.id.recycler_contacts_view);
         recyclerContactView.setLayoutManager( new LinearLayoutManager(view.getContext()));
-        recyclerContactAdapter = new RecyclerContactAdapter(view.getContext(), userList, new OnItemClickListener() {
+        recyclerContactAdapter = new RecyclerContactAdapter(view.getContext(), userList, new RecyclerContactAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(User item) {
                 Log.i("ItemOnclick", item.getName() + "is selected");

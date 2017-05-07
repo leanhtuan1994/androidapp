@@ -24,25 +24,34 @@ public class RecyclerSetingAdapter extends RecyclerView.Adapter<RecyclerSettingI
     private List<Setting> settingList;
     private Context context;
     private LayoutInflater layoutInflater;
+    private OnItemClickListener listener;
 
-    public RecyclerSetingAdapter(Context context, List<Setting> list){
+    public interface OnItemClickListener {
+        void onItemClick(Setting item);
+
+    }
+
+
+
+    public RecyclerSetingAdapter(Context context, List<Setting> list, OnItemClickListener listener){
         this.context = context;
         this.settingList = list;
         this.layoutInflater = LayoutInflater.from(context);
+        this.listener = listener;
     }
 
     @Override
     public RecyclerSettingItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = layoutInflater.inflate(R.layout.recycler_item_settings, parent, false);
-
-        return RecyclerSettingItemViewHolder.newInstance(parent);
+        return RecyclerSettingItemViewHolder.newInstance(itemView);
     }
 
     @Override
     public void onBindViewHolder(RecyclerSettingItemViewHolder holder, int position) {
         Setting setting = settingList.get(position);
 
-
+        // set data for holder
+        holder.bind(setting, listener);
     }
 
     @Override

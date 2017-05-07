@@ -1,5 +1,6 @@
 package ttuananhle.android.chatlearningapp.viewholder;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -9,6 +10,8 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import ttuananhle.android.chatlearningapp.R;
+import ttuananhle.android.chatlearningapp.adapter.RecyclerSetingAdapter;
+import ttuananhle.android.chatlearningapp.model.Setting;
 
 /**
  * Created by leanh on 5/7/2017.
@@ -33,11 +36,24 @@ public class RecyclerSettingItemViewHolder extends RecyclerView.ViewHolder {
         return new RecyclerSettingItemViewHolder(parent, img, txt);
     }
 
-    public void setImgItem(String imgUrl){
-
+    public void setImgItem(Bitmap bitmap){
+        if ( bitmap != null){
+            this.imgItem.setImageBitmap(bitmap);
+        }
+    }
+    public void setTxtItem(String text){
+        this.txtItem.setText(text);
     }
 
-    public void setTxtItem(TextView textView){
-        this.txtItem = textView;
+    public void bind(final Setting setting, final RecyclerSetingAdapter.OnItemClickListener listener){
+        this.setImgItem(setting.getImageUrl());
+        this.setTxtItem(setting.getName());
+
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClick(setting);
+            }
+        });
     }
 }

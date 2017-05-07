@@ -1,12 +1,14 @@
 package ttuananhle.android.chatlearningapp.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,7 +26,9 @@ public class SignInActivity extends AppCompatActivity {
     private EditText edtSignInEmail;
     private EditText edtSignInPassword;
     private TextView txtToSignUp;
+    private CheckBox cbRemember;
 
+    public static final String PREF_MEM_NAME = "REMEMBER_USER_DATA";
 
     private FirebaseAuth firebaseAuth;
 
@@ -41,6 +45,25 @@ public class SignInActivity extends AppCompatActivity {
 
 
     }
+
+    /**
+     * Save data sign in
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        savePrefSignInData();
+    }
+
+    /**
+     * Restore data sign in
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        restoringPrefSignInData();
+    }
+
 
     private void listenerButtonSignInOnClick(){
         btnSignIn.setOnClickListener(new View.OnClickListener() {
@@ -92,5 +115,44 @@ public class SignInActivity extends AppCompatActivity {
         txtToSignUp = (TextView )this.findViewById(R.id.txtToSignUp);
         edtSignInPassword = (EditText) this.findViewById(R.id.edtSignInPassword);
         edtSignInEmail = (EditText) this.findViewById(R.id.edtSignInEmail);
+        cbRemember = (CheckBox) this.findViewById(R.id.cbSignIn_remember);
+    }
+
+    /**
+     * Use Preference to save data signin
+     */
+    private void savePrefSignInData(){
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_MEM_NAME, MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String email = edtSignInEmail.getText().toString();
+        String password = edtSignInPassword.getText().toString();
+        boolean isRemember = cbRemember.isChecked();
+
+        if (isRemember){
+            editor.putString("email", email);
+            editor.putString("password", password);
+            editor.putBoolean("isremember", isRemember);
+        } else {
+            editor.clear();
+        }
+
+        editor.commit();
+    }
+
+    /**
+     * Restore data in Preference
+     */
+    private void restoringPrefSignInData(){
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_MEM_NAME, MODE_PRIVATE);
+        boolean isRemember = sharedPreferences.getBoolean("isremember", false);
+
+        if (isRemember){
+            edtSignInEmail.setText( sharedPreferences.getString("email", ""));
+            edtSignInPassword.setText( sharedPreferences.getString("password", ""));
+        }
+
+        cbRemember.setChecked(isRemember);
+
     }
 }

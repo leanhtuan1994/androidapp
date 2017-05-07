@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import ttuananhle.android.chatlearningapp.R;
-import ttuananhle.android.chatlearningapp.interfacehelper.OnItemClickListener;
+import ttuananhle.android.chatlearningapp.adapter.RecyclerContactAdapter;
 import ttuananhle.android.chatlearningapp.model.User;
 
 /**
@@ -38,7 +38,7 @@ public class RecyclerContactItemViewHolder extends RecyclerView.ViewHolder {
     }
 
 
-    public void bind(final User user, final OnItemClickListener listener){
+    public void bind(final User user, final RecyclerContactAdapter.OnItemClickListener listener){
         setItemName(user.getName());
         setItemEmail(user.getEmail());
 

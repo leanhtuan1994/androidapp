@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import ttuananhle.android.chatlearningapp.R;
-import ttuananhle.android.chatlearningapp.interfacehelper.OnItemClickListener;
 import ttuananhle.android.chatlearningapp.model.User;
 import ttuananhle.android.chatlearningapp.viewholder.RecyclerContactItemViewHolder;
 
@@ -23,6 +22,13 @@ public class RecyclerContactAdapter extends RecyclerView.Adapter<RecyclerContact
     private Context context;
     private LayoutInflater layoutInflater;
     private final OnItemClickListener listener;
+
+
+    public interface OnItemClickListener {
+        void onItemClick(User item);
+
+    }
+
 
     public RecyclerContactAdapter(Context context, List<User> list, OnItemClickListener listener){
         this.context = context;
