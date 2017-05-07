@@ -1,10 +1,13 @@
 package ttuananhle.android.chatlearningapp.fragment;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.Preference;
@@ -17,22 +20,36 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
+import es.dmoral.toasty.Toasty;
 import ttuananhle.android.chatlearningapp.R;
+import ttuananhle.android.chatlearningapp.activity.MainActivity;
 import ttuananhle.android.chatlearningapp.activity.SignInActivity;
 import ttuananhle.android.chatlearningapp.adapter.DividerContactItemDecotation;
 import ttuananhle.android.chatlearningapp.adapter.RecyclerSetingAdapter;
@@ -44,10 +61,14 @@ import ttuananhle.android.chatlearningapp.model.User;
  */
 
 public class SettingsFragment extends Fragment {
-    FirebaseAuth fireAuth;
-    FirebaseUser fireUser;
-    FirebaseDatabase fireData;
-    DatabaseReference dataRef;
+    private FirebaseAuth fireAuth;
+    private FirebaseUser fireUser;
+    private FirebaseDatabase fireData;
+    private DatabaseReference dataRef;
+    private FirebaseStorage fireStorage;
+    private StorageReference storageRef;
+
+
     private User user = new User();
     private RecyclerView recyclerView;
     private RecyclerSetingAdapter recyclerSetingAdapter;
@@ -56,6 +77,8 @@ public class SettingsFragment extends Fragment {
     private TextView txtUsername;
     private TextView txtUserEmail;
     private ImageView btnImageProfile;
+
+    private int REQUEST_LOAD_IMAGE = 1100;
 
 
     @Nullable
@@ -103,7 +126,7 @@ public class SettingsFragment extends Fragment {
         btnImageProfile = (ImageView) view.findViewById(R.id.img_setting_user_profile);
 
         Query query = dataRef.child("Users").child(fireUser.getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(User.class);
@@ -112,9 +135,13 @@ public class SettingsFragment extends Fragment {
                 // set user name and email
                 txtUserEmail.setText( user.getEmail());
                 txtUsername.setText( user.getName() );
-                Picasso.with(view.getContext())
-                        .load( user.getPhotoUrl())
-                        .into(btnImageProfile);
+                try {
+                    Picasso.with(view.getContext())
+                            .load( user.getPhotoUrl())
+                            .into(btnImageProfile);
+                } catch (Exception e){}
+
+                Log.i("Photo", user.getPhotoUrl());
             }
 
             @Override
@@ -129,18 +156,78 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.i("ImageProfile", "Clicked");
-
-                
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, REQUEST_LOAD_IMAGE);
             }
         });
-
-
     }
+
+
 
     private void getFirebase(){
         fireAuth = FirebaseAuth.getInstance();
         fireUser = fireAuth.getCurrentUser();
         fireData = FirebaseDatabase.getInstance();
         dataRef = fireData.getReference();
+        fireStorage = FirebaseStorage.getInstance();
+        storageRef = fireStorage.getReference();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if ( resultCode == Activity.RESULT_OK){
+            if(requestCode == REQUEST_LOAD_IMAGE){
+                try {
+                    final Uri imageUri = data.getData();
+                    Picasso.with(getContext()).load(imageUri).into(btnImageProfile);
+                    Log.i("Image", "Set image succesfull");
+
+                    final InputStream imageStream = getActivity().getContentResolver().openInputStream(imageUri);
+                    final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    selectedImage.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                    byte[] dataImage = baos.toByteArray();
+                    StorageReference storageUserRef = storageRef.child("PhotoProfile").child(fireUser.getUid());
+
+                    UploadTask uploadTask = storageUserRef.putBytes(dataImage);
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toasty.info(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            // Get Uri in storage
+                            @SuppressWarnings("VisibleForTests") Uri downloadUri = Uri.parse(taskSnapshot.getDownloadUrl().toString());
+
+                            /* Save image profile */
+                            UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
+                                    .setPhotoUri(downloadUri)
+                                    .build();
+
+                            fireUser.updateProfile(profileChangeRequest)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if ( task.isSuccessful()){
+                                                Log.i("UpdateProfileUser", "Oke");
+                                            }
+                                        }
+                                    });
+
+                            // Save image in data
+                            dataRef.child("Users").child(fireUser.getUid()).child("photoUrl").setValue(downloadUri.toString());
+
+                        }
+                    });
+
+                }catch (Exception ex){
+                    Toasty.info(getContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        }
     }
 }

@@ -1,8 +1,12 @@
 package ttuananhle.android.chatlearningapp.activity;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.annotation.IdRes;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
@@ -32,6 +36,13 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int REQUEST_CODE_SIGN_IN_USER = 1000;
     public static final int REQUEST_CODE_SIGN_UP_USER = 2000;
+    public static final int REQUEST_LOAD_IMAGE = 2000;
+
+    // Permission for get data
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     private BottomBar       bottomBar;
     private FragmentManager fragmentManager;
@@ -53,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        verifyStoragePermissions(MainActivity.this);
         // init bottom bar
         initFragment(savedInstanceState);
         initBottomBar();
@@ -156,4 +168,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+    /**
+     * Checks if the app has permission to write to device storage
+     * If the app does not has permission then the user will be prompted to grant permissions
+     * @param activity
+     */
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_LOAD_IMAGE
+            );
+        }
+    }
+
 }

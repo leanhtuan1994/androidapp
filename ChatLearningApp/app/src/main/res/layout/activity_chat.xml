@@ -6,7 +6,10 @@
     android:layout_height="match_parent"
     tools:context="ttuananhle.android.chatlearningapp.activity.ChatActivity">
 
-
+    <include
+        layout="@layout/tool_bar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
     
     <RelativeLayout
         android:layout_alignParentBottom="true"
