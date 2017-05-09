@@ -30,6 +30,7 @@
         <EditText
             android:layout_marginRight="20dp"
             android:id="@+id/txt_chat_input"
+            android:hint="input text"
             android:layout_toLeftOf="@+id/btn_chat_send"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

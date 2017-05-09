@@ -13,7 +13,7 @@ import android.view.View;
  * Created by leanh on 5/5/2017.
  */
 
-public class DividerContactItemDecotation extends RecyclerView.ItemDecoration {
+public class DividerItemDecotation extends RecyclerView.ItemDecoration {
     private static final int[] ATTRS = new int[]{
             android.R.attr.listDivider
     };
@@ -22,15 +22,27 @@ public class DividerContactItemDecotation extends RecyclerView.ItemDecoration {
     public static final int VERTICAL_LIST = LinearLayoutCompat.VERTICAL;
 
 
+    private int paddingLeft = 0;
+
     private Drawable drawableDivider;
     private int orientation;
 
-    public DividerContactItemDecotation(Context context, int orientation){
+    public DividerItemDecotation(Context context, int orientation){
         final TypedArray typedArray = context.obtainStyledAttributes(ATTRS);
 
         drawableDivider = typedArray.getDrawable(0);
         typedArray.recycle();
         setOrientation(orientation);
+    }
+
+    public DividerItemDecotation(Context context, int orientation, int paddingLeft){
+        final TypedArray typedArray = context.obtainStyledAttributes(ATTRS);
+
+        drawableDivider = typedArray.getDrawable(0);
+        typedArray.recycle();
+        setOrientation(orientation);
+
+        this.paddingLeft = paddingLeft;
     }
 
     public void setOrientation(int orientation){
@@ -60,7 +72,7 @@ public class DividerContactItemDecotation extends RecyclerView.ItemDecoration {
 
 
     public void drawVertical(Canvas canvas, RecyclerView parent) {
-        final int left = parent.getPaddingLeft() - 100;
+        final int left = parent.getPaddingLeft();
         final int right = parent.getWidth() - parent.getPaddingRight();
 
         final int childCount = parent.getChildCount();
@@ -69,7 +81,7 @@ public class DividerContactItemDecotation extends RecyclerView.ItemDecoration {
             final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
             final int top = child.getBottom() + params.bottomMargin;
             final int bottom = top + drawableDivider.getIntrinsicHeight();
-            drawableDivider.setBounds(left, top, right, bottom);
+            drawableDivider.setBounds(left + paddingLeft, top, right, bottom);
             drawableDivider.draw(canvas);
         }
     }

@@ -10,21 +10,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import es.dmoral.toasty.Toasty;
 import ttuananhle.android.chatlearningapp.R;
 import ttuananhle.android.chatlearningapp.activity.ChatActivity;
-import ttuananhle.android.chatlearningapp.adapter.DividerContactItemDecotation;
+import ttuananhle.android.chatlearningapp.adapter.DividerItemDecotation;
 import ttuananhle.android.chatlearningapp.adapter.RecyclerContactAdapter;
 import ttuananhle.android.chatlearningapp.model.User;
 
@@ -39,6 +40,8 @@ public class ContactsFragment extends Fragment {
     private List<User>             userList = new ArrayList<>();
     private FirebaseDatabase       fireData;
     private DatabaseReference      dataRef;
+    private FirebaseAuth           fireAuth;
+    private FirebaseUser           fireUser;
 
     @Nullable
     @Override
@@ -46,23 +49,30 @@ public class ContactsFragment extends Fragment {
         View view = inflater.inflate(R.layout.contacts_fragment, container, false);
 
         initRecyclerContactView(view);
-        listenerDataUser(view);
+        listenerDataUser();
 
         return view;
     }
 
 
-    private void listenerDataUser(final View view){
+    private void listenerDataUser(){
         fireData = FirebaseDatabase.getInstance();
         dataRef = fireData.getReference();
+        fireAuth = FirebaseAuth.getInstance();
+        fireUser = fireAuth.getCurrentUser();
 
-        dataRef.child("Users").addChildEventListener(new ChildEventListener() {
+        Query query = dataRef.child("Users").orderByChild("name");
+        query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                userList.add( dataSnapshot.getValue( User.class));
 
-                // notity data changed for recycler view
-                recyclerContactAdapter.notifyDataSetChanged();
+                // Check current user not add list
+                if ( !dataSnapshot.getKey().equals(fireUser.getUid())){
+                    userList.add( dataSnapshot.getValue( User.class));
+
+                    // notify data changed for recycler view
+                    recyclerContactAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -84,15 +94,14 @@ public class ContactsFragment extends Fragment {
             public void onItemClick(User item) {
                 Log.i("ItemOnclick", item.getName() + "is selected");
 
-
                 Intent intent = new Intent( view.getContext(), ChatActivity.class);
-                intent.putExtra("id", item.getId());
+                intent.putExtra("toId", item.getId());
                 startActivity(intent);
             }
         });
 
         // Add Divider
-        recyclerContactView.addItemDecoration( new DividerContactItemDecotation(view.getContext(), LinearLayoutManager.VERTICAL));
+        recyclerContactView.addItemDecoration( new DividerItemDecotation(view.getContext(), LinearLayoutManager.VERTICAL, 300));
         recyclerContactView.setAdapter(recyclerContactAdapter);
 
     }

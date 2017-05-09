@@ -1,6 +1,7 @@
 package ttuananhle.android.chatlearningapp.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -90,11 +91,16 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void saveFireUserOnData(final String id, final String name, String email, String password){
-        User userSignUp = new User(id, name, email, password);
+
+        String photoUrl = "https://firebasestorage.googleapis.com/v0/b/chatlearningapp-338d2.appspot." +
+                "com/o/photo_profile.png?alt=media&token=9df30e16-083c-494e-9bb7-9baa56e5c741";
+
+        User userSignUp = new User(id, name, email, password, photoUrl);
 
         dataRef.child("Users").child(id).setValue(userSignUp);
 
         UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
+                .setPhotoUri(Uri.parse(photoUrl))
                 .setDisplayName(name)
                 .build();
 

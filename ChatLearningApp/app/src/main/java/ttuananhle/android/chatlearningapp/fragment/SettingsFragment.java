@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -44,14 +42,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 import es.dmoral.toasty.Toasty;
 import ttuananhle.android.chatlearningapp.R;
-import ttuananhle.android.chatlearningapp.activity.MainActivity;
 import ttuananhle.android.chatlearningapp.activity.SignInActivity;
-import ttuananhle.android.chatlearningapp.adapter.DividerContactItemDecotation;
+import ttuananhle.android.chatlearningapp.adapter.DividerItemDecotation;
 import ttuananhle.android.chatlearningapp.adapter.RecyclerSetingAdapter;
 import ttuananhle.android.chatlearningapp.model.Setting;
 import ttuananhle.android.chatlearningapp.model.User;
@@ -116,7 +111,7 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        recyclerView.addItemDecoration(new DividerContactItemDecotation(view.getContext(), LinearLayoutManager.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecotation(view.getContext(), LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(recyclerSetingAdapter);
     }
 
@@ -136,12 +131,13 @@ public class SettingsFragment extends Fragment {
                 txtUserEmail.setText( user.getEmail());
                 txtUsername.setText( user.getName() );
                 try {
+                    Log.i("Photo", user.getPhotoUrl());
                     Picasso.with(view.getContext())
                             .load( user.getPhotoUrl())
                             .into(btnImageProfile);
-                } catch (Exception e){}
+                } catch (Exception e){
 
-                Log.i("Photo", user.getPhotoUrl());
+                }
             }
 
             @Override

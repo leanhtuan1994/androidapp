@@ -18,10 +18,8 @@ public class SplashActivity extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         // Set sleep time
         SystemClock.sleep(TimeUnit.SECONDS.toMillis(1));
-
 
         // Go to main Activity
         Intent intent = new Intent(this, MainActivity.class);

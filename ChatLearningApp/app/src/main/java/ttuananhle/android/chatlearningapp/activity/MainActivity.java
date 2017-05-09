@@ -12,7 +12,9 @@ import android.support.v4.app.FragmentManager;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -53,10 +55,11 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseDatabase  fireData;
     private DatabaseReference dataRef;
 
-
-
     private User currentUser;
 
+
+    private Toolbar toolbar;
+    private TextView txtTitleToolbar;
 
 
     @Override
@@ -67,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         verifyStoragePermissions(MainActivity.this);
         // init bottom bar
         initFragment(savedInstanceState);
+        initToolbar();
         initBottomBar();
 
 
@@ -88,21 +92,41 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(@IdRes int tabId) {
                 if(tabId == R.id.tab_settings){
+                    // Set title toolber
+                    txtTitleToolbar.setText("Settings");
+
+                    // Replace Fragment
                     SettingsFragment settingsFragment = new SettingsFragment();
                     fragmentManager.beginTransaction().replace(R.id.frame_container, settingsFragment)
                             .commit();
 
                 } else if ( tabId == R.id.tab_contacts ){
+                    // Set title toolber
+                    txtTitleToolbar.setText("Contacts");
+
+                    // Replace Fragment
                     ContactsFragment contactsFragment = new ContactsFragment();
                     fragmentManager.beginTransaction().replace(R.id.frame_container, contactsFragment)
                             .commit();
                 } else if ( tabId == R.id.tab_messages){
+                    // Set title toolber
+                    txtTitleToolbar.setText("Messages");
+
+                    // Replace Fragment
                     MessagesFragment messagesFragment = new MessagesFragment();
                     fragmentManager.beginTransaction().replace(R.id.frame_container, messagesFragment)
                             .commit();
                 }
             }
         });
+    }
+
+    private void initToolbar(){
+        toolbar = (Toolbar) this.findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        txtTitleToolbar = (TextView) toolbar.findViewById(R.id.toolbar_title);
     }
 
     private void initFragment(Bundle savedInstanceState){
@@ -134,6 +158,10 @@ public class MainActivity extends AppCompatActivity {
         if ( fireUser == null){
             Intent intent = new Intent(MainActivity.this, SignInActivity.class);
             startActivity(intent);
+
+
+
+
             finish();
         } else {
             dataRef.child("Users").addChildEventListener(new ChildEventListener() {
