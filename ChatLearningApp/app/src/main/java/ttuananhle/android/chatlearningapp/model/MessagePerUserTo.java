@@ -9,15 +9,25 @@ public class MessagePerUserTo {
     private String massage;
     private String photoUrl;
     private String time;
+    private String toId;
 
     public MessagePerUserTo(){
 
     }
-    public MessagePerUserTo(String name, String massage, String photoUrl, String time) {
+    public MessagePerUserTo(String toId, String name, String massage, String photoUrl, String time) {
+        this.toId = toId;
         this.name = name;
         this.massage = massage;
         this.photoUrl = photoUrl;
         this.time = time;
+    }
+
+    public String getToId() {
+        return toId;
+    }
+
+    public void setToId(String toId) {
+        this.toId = toId;
     }
 
     public String getName() {

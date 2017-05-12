@@ -9,6 +9,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -60,16 +63,36 @@ public class MessagesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.messages_fragment, container, false);
 
+        setHasOptionsMenu(true);
         mappingFirebase();
         mappingView(view);
 
-        initRecyclerView();
+        initRecyclerView(view);
         initListMessage();
 
 
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_message_fragment, menu);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.menu_create_message:
+                Log.i("Messages", "Create messages on click");
+                break;
+
+            default:
+                break;
+        }
+        return true;
+    }
 
     private void mappingView(final  View view){
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_messages_view);
@@ -90,18 +113,22 @@ public class MessagesFragment extends Fragment {
                    public void onDataChange(DataSnapshot dataSnapshot) {
                        Log.i("MessagePer", dataSnapshot.toString());
                        final Message message = dataSnapshot.getValue(Message.class);
+                       String idChatUser = message.getToId();
 
-                       dataRef.child("Users").child(message.getToId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                       if(message.getToId().equals(fireUser.getUid())){
+                           idChatUser = message.getFromId();
+                       }
+
+                       dataRef.child("Users").child(idChatUser).addListenerForSingleValueEvent(new ValueEventListener() {
                            @Override
                            public void onDataChange(DataSnapshot dataSnapshot) {
                                Log.i("toUser", dataSnapshot.getKey());
-                               User toUser = dataSnapshot.getValue(User.class);
+                               User chatUser = dataSnapshot.getValue(User.class);
 
                                MessagePerUserTo messagePer = new
-                                       MessagePerUserTo(toUser.getName(), message.getText(), toUser.getPhotoUrl(), message.getTime());
+                                       MessagePerUserTo( chatUser.getId(),chatUser.getName(), message.getText(), chatUser.getPhotoUrl(), message.getTime());
 
-
-                               messageMap.put(toUser.getId(), messagePer);
+                               messageMap.put(chatUser.getId(), messagePer);
                                Log.i("Check", "" + messageMap.size());
                                userToList.clear();
                                for( Map.Entry<String, MessagePerUserTo> entry : messageMap.entrySet()){
@@ -109,7 +136,7 @@ public class MessagesFragment extends Fragment {
                                      userToList.add(entry.getValue());
                                }
 
-                               // Sort list data by time
+                               // Sort list messages by time
                                Collections.sort(userToList, new Comparator<MessagePerUserTo>() {
                                      @Override
                                      public int compare(MessagePerUserTo o1, MessagePerUserTo o2) {
@@ -142,12 +169,16 @@ public class MessagesFragment extends Fragment {
     }
 
 
-    private void initRecyclerView(){
+    private void initRecyclerView(final View view){
         recyclerView.setLayoutManager( new LinearLayoutManager( getContext()));
         messagesAdapter = new RecyclerMessagesAdapter(getContext(), userToList, new RecyclerMessagesAdapter.OnItemClickListener(){
             @Override
            public void onItemClick(MessagePerUserTo item){
                 Log.i("ItemOnclick", item.getName() + "is selected");
+
+                Intent intent = new Intent( view.getContext(), ChatActivity.class);
+                intent.putExtra("toId", item.getToId());
+                startActivity(intent);
             }
         });
 

@@ -2,10 +2,15 @@ package ttuananhle.android.chatlearningapp.viewholder;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import ttuananhle.android.chatlearningapp.R;
@@ -58,7 +63,39 @@ public class RecyclerMessagesItemViewHolder extends RecyclerView.ViewHolder {
     }
     public void setTxtUsername(String name){ this.txtUsername.setText(name);}
     public void setTxtRecentMessage(String message) { this.txtRecentMessage.setText(message);}
-    public void setTxtTime(String time) { this.txtTime.setText(time);}
+    public void setTxtTime(String time) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        try {
+            // Get date of messages
+            Date date = simpleDateFormat.parse(time);
+            Calendar mesDate = Calendar.getInstance();
+            mesDate.setTime(date);
+            Log.i("Date", "Message" + mesDate.get(Calendar.MINUTE));
+
+            // Get current date
+            Calendar crrDate = Calendar.getInstance();
+            Log.i("Date", "Current: " + crrDate.get(Calendar.MINUTE) + "");
+
+            // Compare date
+            if (crrDate.get(Calendar.DATE) - mesDate.get(Calendar.DATE) <= 1){
+                SimpleDateFormat format = new SimpleDateFormat("h:mm a");
+                String setTime = format.format(date);
+                this.txtTime.setText(setTime);
+
+            } else if ( crrDate.get(Calendar.DATE) - mesDate.get(Calendar.DATE) < 7){
+                SimpleDateFormat format = new SimpleDateFormat("EEE");
+                String setTime = format.format(date);
+                this.txtTime.setText(setTime);
+            } else {
+                SimpleDateFormat format = new SimpleDateFormat("MMM d");
+                String setTime = format.format(date);
+                this.txtTime.setText(setTime);
+            }
+
+        } catch (Exception e){}
+
+    }
+
 
     public void bind(final MessagePerUserTo userTo, final RecyclerMessagesAdapter.OnItemClickListener listener){
         setImgUserProfile(userTo.getPhotoUrl());
