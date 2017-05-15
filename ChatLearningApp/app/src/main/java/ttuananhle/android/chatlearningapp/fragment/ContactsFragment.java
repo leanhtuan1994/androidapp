@@ -19,8 +19,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import ttuananhle.android.chatlearningapp.R;
@@ -61,29 +64,55 @@ public class ContactsFragment extends Fragment {
         fireAuth = FirebaseAuth.getInstance();
         fireUser = fireAuth.getCurrentUser();
 
-        Query query = dataRef.child("Users").orderByChild("name");
-        query.addChildEventListener(new ChildEventListener() {
+        dataRef.child("Users").child(fireUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
 
-                // Check current user not add list
-                if ( !dataSnapshot.getKey().equals(fireUser.getUid())){
-                    userList.add( dataSnapshot.getValue( User.class));
+                final DatabaseReference userCodeRef = dataRef.child("Code").child(user.getCode());
+                userCodeRef.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        dataRef.child("Users").child(dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (!dataSnapshot.getKey().equals(fireUser.getUid())){
+                                    userList.add( dataSnapshot.getValue( User.class));
 
-                    // notify data changed for recycler view
-                    recyclerContactAdapter.notifyDataSetChanged();
-                }
+                                    Collections.sort(userList, new Comparator<User>() {
+                                        @Override
+                                        public int compare(User o1, User o2) {
+                                            return o1.getName().compareTo(o2.getName());
+                                        }
+                                    });
+
+                                    // notify data changed for recycler view
+                                    recyclerContactAdapter.notifyDataSetChanged();
+                                }
+                            }
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {}
+                        });
+                    }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {}
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {}
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
         });
+
+
     }
 
     private void initRecyclerContactView(final View view){

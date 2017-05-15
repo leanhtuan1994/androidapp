@@ -24,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
 
@@ -39,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_SIGN_IN_USER = 1000;
     public static final int REQUEST_CODE_SIGN_UP_USER = 2000;
     public static final int REQUEST_LOAD_IMAGE = 2000;
+
+    public static  String CODE;
 
     // Permission for get data
     private static String[] PERMISSIONS_STORAGE = {
@@ -158,27 +161,33 @@ public class MainActivity extends AppCompatActivity {
         if ( fireUser == null){
             Intent intent = new Intent(MainActivity.this, SignInActivity.class);
             startActivity(intent);
-
-
-
-
             finish();
         } else {
             dataRef.child("Users").addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
                     Log.i("USER", "fireUSER = " + fireUser.getUid());
                     Log.i("USER", "dataUSER = " + dataSnapshot.getKey());
-
                     Log.i("DATA", dataSnapshot.toString());
+
                     if (dataSnapshot.getKey().equals(fireUser.getUid()) ){
                         currentUser = dataSnapshot.getValue(User.class);
-                        Toasty.success(MainActivity.this,"Hi! " + currentUser.getName(), Toast.LENGTH_LONG).show();
 
+                        // if user is student -> check code
+                        if (!currentUser.isTeacher()){
+                            CODE = currentUser.getCode();
+                            if (CODE.equals("")){
+                                // Not have code
+                                startActivity(new Intent(MainActivity.this, CheckCodeActivity.class));
+                                finish();
+                            } else {
+                                Toasty.success(MainActivity.this,"Hi! " + currentUser.getName(), Toast.LENGTH_LONG).show();
+                            }
+                        }
                         return;
                     }
                 }
+
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
@@ -191,6 +200,8 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

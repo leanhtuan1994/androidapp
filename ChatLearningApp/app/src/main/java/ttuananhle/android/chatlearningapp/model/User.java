@@ -10,6 +10,8 @@ public class User {
     private String  email;
     private String  password;
     private String  photoUrl;
+    private boolean isTeacher = false;
+    private String  code;
 
     public User(){
 
@@ -29,6 +31,26 @@ public class User {
         this.password = password;
         this.photoUrl = photoUrl;
     }
+
+    public User(String id, String name, String email, String password, String photoUrl, boolean isTeacher) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.photoUrl = photoUrl;
+        this.isTeacher = isTeacher;
+    }
+
+    public User(String id, String name, String email, String password, String photoUrl, boolean isTeacher, String code) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.photoUrl = photoUrl;
+        this.isTeacher = isTeacher;
+        this.code = code;
+    }
+
 
     public String getId() {
         return id;
@@ -68,5 +90,21 @@ public class User {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public boolean isTeacher() {
+        return isTeacher;
+    }
+
+    public void setTeacher(boolean teacher) {
+        isTeacher = teacher;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

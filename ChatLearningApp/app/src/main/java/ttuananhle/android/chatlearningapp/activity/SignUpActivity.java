@@ -2,6 +2,7 @@ package ttuananhle.android.chatlearningapp.activity;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,11 +38,17 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText edtSignUpPassword;
     private EditText edtSignUpName;
     private Button   btnSignUp;
+    private RadioGroup  rbGroup;
+    private RadioButton rbTeacher;
+    private RadioButton rbStudent;
+
 
     private FirebaseAuth fireAuth;
     private FirebaseDatabase fireData;
     private DatabaseReference dataRef;
     private FirebaseUser fireUser;
+
+    private boolean isTeacher = false;
 
 
     @Override
@@ -49,6 +58,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         mappingView();
         initFirebase();
+        listenerRadioButtonIsTeacher();
         listenerTxtToSignInOnClick();
         listenerButtonSignUpOnClick();
     }
@@ -90,12 +100,26 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
+    private void listenerRadioButtonIsTeacher(){
+        rbGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                if (checkedId == R.id.rbStudent)
+                    isTeacher = false;
+                else if (checkedId == R.id.rbTeacher)
+                    isTeacher = true;
+
+                Log.i("Checked", isTeacher + "");
+            }
+        });
+    }
+
     private void saveFireUserOnData(final String id, final String name, String email, String password){
 
         String photoUrl = "https://firebasestorage.googleapis.com/v0/b/chatlearningapp-338d2.appspot." +
                 "com/o/photo_profile.png?alt=media&token=9df30e16-083c-494e-9bb7-9baa56e5c741";
 
-        User userSignUp = new User(id, name, email, password, photoUrl);
+        User userSignUp = new User(id, name, email, password, photoUrl, isTeacher, "");
 
         dataRef.child("Users").child(id).setValue(userSignUp);
 
@@ -125,7 +149,6 @@ public class SignUpActivity extends AppCompatActivity {
                 if( dataSnapshot.getValue(User.class).getId() == id) {
 
                 }
-
             }
 
             @Override
@@ -134,19 +157,11 @@ public class SignUpActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
+            public void onChildRemoved(DataSnapshot dataSnapshot) {}
             @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
+            public void onCancelled(DatabaseError databaseError) {}
         });
 
     }
@@ -173,5 +188,9 @@ public class SignUpActivity extends AppCompatActivity {
         edtSignUpName = (EditText) this.findViewById(R.id.edtSignUpName);
         edtSignUpPassword = (EditText) this.findViewById(R.id.edtSignUpPassword);
         btnSignUp = (Button) this.findViewById(R.id.btnSignUp);
+        rbGroup = (RadioGroup) this.findViewById(R.id.rbGroup);
+        rbTeacher = (RadioButton) this.findViewById(R.id.rbTeacher);
+        rbStudent  = (RadioButton) this.findViewById(R.id.rbStudent);
+        rbStudent.setChecked(true);
     }
 }

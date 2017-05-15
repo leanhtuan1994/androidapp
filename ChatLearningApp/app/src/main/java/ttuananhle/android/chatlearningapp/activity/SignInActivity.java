@@ -27,7 +27,6 @@ public class SignInActivity extends AppCompatActivity {
     private EditText edtSignInPassword;
     private TextView txtToSignUp;
     private CheckBox cbRemember;
-
     public static final String PREF_MEM_NAME = "REMEMBER_USER_DATA";
 
     private FirebaseAuth firebaseAuth;

@@ -2,6 +2,7 @@ package ttuananhle.android.chatlearningapp.fragment;
 
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -41,10 +43,13 @@ import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
 import ttuananhle.android.chatlearningapp.R;
+import ttuananhle.android.chatlearningapp.activity.CreateCodeActivity;
 import ttuananhle.android.chatlearningapp.activity.SignInActivity;
 import ttuananhle.android.chatlearningapp.adapter.DividerItemDecotation;
 import ttuananhle.android.chatlearningapp.adapter.RecyclerSetingAdapter;
@@ -75,6 +80,9 @@ public class SettingsFragment extends Fragment {
 
     private int REQUEST_LOAD_IMAGE = 1100;
 
+    public static final int CREATE_CODE = 1;
+    public static final int SIGN_OUT = 2;
+
 
     @Nullable
     @Override
@@ -84,41 +92,16 @@ public class SettingsFragment extends Fragment {
 
         getFirebase();
         mappingView(view);
-        initListSetting();
         initRecyclerView(view);
+        initListSetting(view);
 
         return view;
     }
 
-    private void initListSetting(){
+    private void initListSetting(final View view){
 
-        settingList.add( new Setting( 1, "Sign Out", BitmapFactory.decodeResource(getResources(),
+        settingList.add( new Setting( SIGN_OUT, "Sign Out", BitmapFactory.decodeResource(getResources(),
                 R.drawable.signout)));
-    }
-
-    private void initRecyclerView(final View view){
-        recyclerView = (RecyclerView)  view.findViewById(R.id.recycler_setting_fragment);
-        recyclerView.setLayoutManager( new LinearLayoutManager(view.getContext()));
-        recyclerSetingAdapter = new RecyclerSetingAdapter( view.getContext(), settingList, new RecyclerSetingAdapter.OnItemClickListener(){
-            @Override
-            public void onItemClick(Setting item) {
-                Log.i("OnClick", "Setting Item Clicked");
-                if( item.getId() == 1){
-                    fireAuth.signOut();
-                    startActivity( new Intent(view.getContext(), SignInActivity.class));
-                    getActivity().finish();
-                }
-            }
-        });
-
-        recyclerView.addItemDecoration(new DividerItemDecotation(view.getContext(), LinearLayoutManager.VERTICAL));
-        recyclerView.setAdapter(recyclerSetingAdapter);
-    }
-
-    private void mappingView(final View view){
-        txtUserEmail = (TextView) view.findViewById(R.id.txt_setting_user_email);
-        txtUsername = (TextView) view.findViewById(R.id.txt_setting_user_name);
-        btnImageProfile = (ImageView) view.findViewById(R.id.img_setting_user_profile);
 
         Query query = dataRef.child("Users").child(fireUser.getUid());
         query.addValueEventListener(new ValueEventListener() {
@@ -130,6 +113,20 @@ public class SettingsFragment extends Fragment {
                 // set user name and email
                 txtUserEmail.setText( user.getEmail());
                 txtUsername.setText( user.getName() );
+
+                // Check user is teacher
+                if ( user.isTeacher()){
+                    settingList.add( new Setting( CREATE_CODE, "Create Code", BitmapFactory.decodeResource(getResources(),
+                            R.drawable.code)));
+                    Collections.sort(settingList, new Comparator<Setting>() {
+                        @Override
+                        public int compare(Setting o1, Setting o2) {
+                            return String.valueOf(o1.getId()).compareTo(String.valueOf(o2.getId()));
+                        }
+                    });
+                    recyclerSetingAdapter.notifyDataSetChanged();
+                }
+
                 try {
                     Log.i("Photo", user.getPhotoUrl());
                     Picasso.with(view.getContext())
@@ -145,6 +142,57 @@ public class SettingsFragment extends Fragment {
 
             }
         });
+    }
+
+    private void initRecyclerView(final View view){
+        recyclerView = (RecyclerView)  view.findViewById(R.id.recycler_setting_fragment);
+        recyclerView.setLayoutManager( new LinearLayoutManager(view.getContext()));
+        recyclerSetingAdapter = new RecyclerSetingAdapter( view.getContext(), settingList, new RecyclerSetingAdapter.OnItemClickListener(){
+            @Override
+            public void onItemClick(Setting item) {
+                Log.i("OnClick", "Setting Item Clicked");
+                if( item.getId() == SIGN_OUT){
+                    fireAuth.signOut();
+                    startActivity( new Intent(view.getContext(), SignInActivity.class));
+                    getActivity().finish();
+
+                } else if (item.getId() == CREATE_CODE){
+                    dataRef.child("Users").child(fireUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User teacherUser = dataSnapshot.getValue(User.class);
+                            if ( teacherUser.getCode().equals("")){
+                                startActivity(new Intent(view.getContext(), CreateCodeActivity.class));
+                            } else {
+                                AlertDialog alertDialog = new AlertDialog.Builder(view.getContext()).create();
+                                alertDialog.setTitle("Code");
+                                alertDialog.setMessage("Code is: " + teacherUser.getCode());
+                                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                alertDialog.show();
+                            }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {}
+                    });
+                }
+            }
+        });
+
+        recyclerView.addItemDecoration(new DividerItemDecotation(view.getContext(), LinearLayoutManager.VERTICAL));
+        recyclerView.setAdapter(recyclerSetingAdapter);
+    }
+
+
+
+    private void mappingView(final View view){
+        txtUserEmail = (TextView) view.findViewById(R.id.txt_setting_user_email);
+        txtUsername = (TextView) view.findViewById(R.id.txt_setting_user_name);
+        btnImageProfile = (ImageView) view.findViewById(R.id.img_setting_user_profile);
 
 
         // listener change image profile
