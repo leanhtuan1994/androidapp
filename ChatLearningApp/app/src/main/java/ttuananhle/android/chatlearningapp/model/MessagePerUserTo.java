@@ -10,6 +10,8 @@ public class MessagePerUserTo {
     private String photoUrl;
     private String time;
     private String toId;
+    private boolean seen;
+    private String sendId;
 
     public MessagePerUserTo(){
 
@@ -21,6 +23,17 @@ public class MessagePerUserTo {
         this.photoUrl = photoUrl;
         this.time = time;
     }
+    public MessagePerUserTo(String toId, String name, String massage, String photoUrl, String time, boolean seen, String sendId) {
+        this.toId = toId;
+        this.name = name;
+        this.massage = massage;
+        this.photoUrl = photoUrl;
+        this.time = time;
+        this.seen = seen;
+        this.sendId = sendId;
+    }
+
+
 
     public String getToId() {
         return toId;
@@ -60,5 +73,21 @@ public class MessagePerUserTo {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public boolean isSeen() {
+        return seen;
+    }
+
+    public void setSeen(boolean seen) {
+        this.seen = seen;
+    }
+
+    public String getSendId() {
+        return sendId;
+    }
+
+    public void setSendId(String sendId) {
+        this.sendId = sendId;
     }
 }

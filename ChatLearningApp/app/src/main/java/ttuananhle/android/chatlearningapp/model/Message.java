@@ -11,6 +11,7 @@ public class Message {
     private String toId;
     private String text;
     private String time;
+    private boolean seen;
 
 
     public Message(){
@@ -21,6 +22,14 @@ public class Message {
         this.toId = toId;
         this.text = text;
         this.time = time;
+    }
+
+    public Message(String fromId, String toId, String text, String time, boolean seen) {
+        this.fromId = fromId;
+        this.toId = toId;
+        this.text = text;
+        this.time = time;
+        this.seen = seen;
     }
 
     public String getFromId() {
@@ -53,5 +62,13 @@ public class Message {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public boolean isSeen() {
+        return seen;
+    }
+
+    public void setSeen(boolean seen) {
+        this.seen = seen;
     }
 }

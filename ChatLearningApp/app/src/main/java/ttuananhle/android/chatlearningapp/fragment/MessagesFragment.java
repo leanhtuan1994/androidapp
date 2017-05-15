@@ -68,10 +68,16 @@ public class MessagesFragment extends Fragment {
         mappingView(view);
 
         initRecyclerView(view);
-        initListMessage();
+
 
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initListMessage();
     }
 
     @Override
@@ -115,18 +121,18 @@ public class MessagesFragment extends Fragment {
                        final Message message = dataSnapshot.getValue(Message.class);
                        String idChatUser = message.getToId();
 
-                       if(message.getToId().equals(fireUser.getUid())){
+                       if ( message.getToId().equals(fireUser.getUid())) {
                            idChatUser = message.getFromId();
                        }
-
-                       dataRef.child("Users").child(idChatUser).addListenerForSingleValueEvent(new ValueEventListener() {
+                       dataRef.child("Users").child(idChatUser).addValueEventListener(new ValueEventListener() {
                            @Override
                            public void onDataChange(DataSnapshot dataSnapshot) {
                                Log.i("toUser", dataSnapshot.getKey());
                                User chatUser = dataSnapshot.getValue(User.class);
 
                                MessagePerUserTo messagePer = new
-                                       MessagePerUserTo( chatUser.getId(),chatUser.getName(), message.getText(), chatUser.getPhotoUrl(), message.getTime());
+                                       MessagePerUserTo( chatUser.getId(),chatUser.getName(), message.getText(),
+                                       chatUser.getPhotoUrl(), message.getTime(), message.isSeen(), message.getFromId());
 
                                messageMap.put(chatUser.getId(), messagePer);
                                Log.i("Check", "" + messageMap.size());
@@ -146,6 +152,13 @@ public class MessagesFragment extends Fragment {
 
                                // Reverse data
                                Collections.reverse(userToList);
+
+                               // Check seen new message
+                               for ( MessagePerUserTo item: userToList) {
+                                  if ( !item.getSendId().equals(fireUser.getUid())){
+                                      Log.i("Seen", item.getSendId());
+                                  }
+                               }
 
                                messagesAdapter.notifyDataSetChanged();
                            }

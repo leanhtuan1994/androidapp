@@ -68,8 +68,9 @@ public class ChatActivity extends AppCompatActivity {
         initRecyclerView();
         initListMessage();
         listenerBtnSend();
-
     }
+
+
 
     private void getUser(){
         fireAuth = FirebaseAuth.getInstance();
@@ -95,7 +96,7 @@ public class ChatActivity extends AppCompatActivity {
                 if (!text.equals("")){
 
                     DatabaseReference dataMessageRef = dataRef.child("Messages");
-                    Message message = new Message(fireUser.getUid(), toIdUser, text, getCurrentTime());
+                    Message message = new Message(fireUser.getUid(), toIdUser, text, getCurrentTime(), false);
                     // Push message to firebase - Messages
                     String key = dataMessageRef.push().getKey();
                     dataMessageRef.child(key).setValue(message);
@@ -179,14 +180,19 @@ public class ChatActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 DatabaseReference dataMessageRef = dataRef.child("Messages").child(dataSnapshot.getKey());
 
+                final String keyMessage = dataSnapshot.getKey();
                 // Get messages detail
-                dataMessageRef.addValueEventListener(new ValueEventListener() {
+                dataMessageRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Message message = dataSnapshot.getValue(Message.class);
 
                         if (message.getFromId().equals(toIdUser) ||
                                 message.getToId().equals(toIdUser)) {
+
+                            if (message.getToId().equals(fireUser.getUid())){
+                                dataRef.child("Messages").child(keyMessage).child("seen").setValue(true);
+                            }
 
                             messageList.add(message);
                         }

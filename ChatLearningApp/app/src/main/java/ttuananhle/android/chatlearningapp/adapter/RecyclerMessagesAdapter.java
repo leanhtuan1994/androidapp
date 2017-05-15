@@ -50,6 +50,7 @@ public class RecyclerMessagesAdapter extends RecyclerView.Adapter<RecyclerMessag
     public void onBindViewHolder(RecyclerMessagesItemViewHolder holder, int position) {
         MessagePerUserTo messagePerUserTo = userToList.get(position);
 
+
         holder.bind(messagePerUserTo, listener);
     }
 

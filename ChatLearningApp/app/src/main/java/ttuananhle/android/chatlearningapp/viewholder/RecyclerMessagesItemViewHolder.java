@@ -1,11 +1,14 @@
 package ttuananhle.android.chatlearningapp.viewholder;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -48,6 +51,7 @@ public class RecyclerMessagesItemViewHolder extends RecyclerView.ViewHolder {
         TextView txtName = (TextView) parent.findViewById(R.id.txt_item_message_name);
         TextView txtMessage = (TextView) parent.findViewById(R.id.txt_item_message_message);
         TextView txtTime = (TextView) parent.findViewById(R.id.txt_item_message_time);
+
 
         context = parent.getContext();
         return new RecyclerMessagesItemViewHolder(parent, imgView, txtName, txtMessage, txtTime);
@@ -103,6 +107,13 @@ public class RecyclerMessagesItemViewHolder extends RecyclerView.ViewHolder {
         setTxtUsername(userTo.getName());
         setTxtTime(userTo.getTime());
 
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(!userTo.getSendId().equals(firebaseUser.getUid())
+                && !userTo.isSeen()){
+            itemView.setBackgroundResource(R.color.colorBGMessage);
+        } else {
+            itemView.setBackgroundResource(R.color.colorWhite);
+        }
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
