@@ -50,6 +50,7 @@ import java.util.List;
 import es.dmoral.toasty.Toasty;
 import ttuananhle.android.chatlearningapp.R;
 import ttuananhle.android.chatlearningapp.activity.CreateCodeActivity;
+import ttuananhle.android.chatlearningapp.activity.CreateTeamActivity;
 import ttuananhle.android.chatlearningapp.activity.SignInActivity;
 import ttuananhle.android.chatlearningapp.adapter.DividerItemDecotation;
 import ttuananhle.android.chatlearningapp.adapter.RecyclerSetingAdapter;
@@ -81,8 +82,10 @@ public class SettingsFragment extends Fragment {
     private int REQUEST_LOAD_IMAGE = 1100;
 
     public static final int CREATE_CODE = 1;
-    public static final int SIGN_OUT = 2;
+    public static final int CREATE_NEWTEAM = 2;
+    public static final int SIGN_OUT = 3;
 
+    public static final int REQUEST_CREATE_NEWTEAM = 2323;
 
     @Nullable
     @Override
@@ -116,8 +119,12 @@ public class SettingsFragment extends Fragment {
 
                 // Check user is teacher
                 if ( user.isTeacher()){
-                    settingList.add( new Setting( CREATE_CODE, "Create Code", BitmapFactory.decodeResource(getResources(),
+                    settingList.add( new Setting( CREATE_CODE, "Code", BitmapFactory.decodeResource(getResources(),
                             R.drawable.code)));
+
+                    settingList.add( new Setting(CREATE_NEWTEAM, "Create Team", BitmapFactory.decodeResource(getResources(),
+                            R.drawable.presentation)));
+
                     Collections.sort(settingList, new Comparator<Setting>() {
                         @Override
                         public int compare(Setting o1, Setting o2) {
@@ -179,6 +186,30 @@ public class SettingsFragment extends Fragment {
                         @Override
                         public void onCancelled(DatabaseError databaseError) {}
                     });
+                } else if (item.getId() == CREATE_NEWTEAM){
+                    dataRef.child("Users").child(fireUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User user = dataSnapshot.getValue(User.class);
+                            if (!user.getCode().equals("")){
+                                Intent intent = new Intent(getActivity(), CreateTeamActivity.class);
+                                startActivityForResult(intent, REQUEST_CREATE_NEWTEAM);
+                            } else {
+                                AlertDialog alertDialog = new AlertDialog.Builder(view.getContext()).create();
+                                alertDialog.setTitle("Create Team");
+                                alertDialog.setMessage("Not have Course, please create Code for Course!");
+                                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                alertDialog.show();
+                            }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {}
+                    });
                 }
             }
         });
@@ -220,7 +251,6 @@ public class SettingsFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         if ( resultCode == Activity.RESULT_OK){
             if(requestCode == REQUEST_LOAD_IMAGE){
                 try {
@@ -271,6 +301,9 @@ public class SettingsFragment extends Fragment {
                 }catch (Exception ex){
                     Toasty.info(getContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
                 }
+
+            } else  if (requestCode == REQUEST_CREATE_NEWTEAM){
+
             }
         }
     }

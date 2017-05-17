@@ -1,10 +1,14 @@
 package ttuananhle.android.chatlearningapp.fragment;
 
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -155,8 +159,24 @@ public class MessagesFragment extends Fragment {
 
                                // Check seen new message
                                for ( MessagePerUserTo item: userToList) {
-                                  if ( !item.getSendId().equals(fireUser.getUid())){
+                                  if ( !item.getSendId().equals(fireUser.getUid()) && !item.isSeen()){
                                       Log.i("Seen", item.getSendId());
+
+                                      // Send notification
+                                      Intent intent = new Intent(getActivity(), ChatActivity.class);
+                                      intent.putExtra("toId", item.getToId());
+
+                                      PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                      NotificationManager manager = (NotificationManager) getActivity().getSystemService(getActivity().NOTIFICATION_SERVICE);
+                                      NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext())
+                                              .setSmallIcon(R.mipmap.boxchat_logo)
+                                              .setContentTitle(item.getName())
+                                              .setAutoCancel(true)
+                                              .setContentText(item.getMassage())
+                                              .setContentIntent(pendingIntent);
+
+                                      manager.notify(111, builder.build());
+
                                   }
                                }
 

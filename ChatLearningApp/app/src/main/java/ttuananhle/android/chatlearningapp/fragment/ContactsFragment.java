@@ -46,6 +46,7 @@ public class ContactsFragment extends Fragment {
     private FirebaseAuth           fireAuth;
     private FirebaseUser           fireUser;
 
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

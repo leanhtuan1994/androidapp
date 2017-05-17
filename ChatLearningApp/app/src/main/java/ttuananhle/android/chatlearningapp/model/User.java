@@ -24,6 +24,11 @@ public class User {
         this.password = password;
     }
 
+    public User(String name, String email){
+        this.name = name;
+        this.email = email;
+    }
+
     public User(String id, String name, String email, String password, String photoUrl) {
         this.id = id;
         this.name = name;
@@ -106,5 +111,10 @@ public class User {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    @Override
+    public String toString() {
+        return id;
     }
 }

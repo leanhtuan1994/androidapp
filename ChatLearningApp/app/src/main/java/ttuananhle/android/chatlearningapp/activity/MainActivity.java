@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.support.annotation.IdRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -24,7 +23,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
 
@@ -32,6 +30,7 @@ import es.dmoral.toasty.Toasty;
 import ttuananhle.android.chatlearningapp.R;
 import ttuananhle.android.chatlearningapp.fragment.ContactsFragment;
 import ttuananhle.android.chatlearningapp.fragment.MessagesFragment;
+import ttuananhle.android.chatlearningapp.fragment.PresentationsFragment;
 import ttuananhle.android.chatlearningapp.fragment.SettingsFragment;
 import ttuananhle.android.chatlearningapp.model.User;
 
@@ -118,6 +117,14 @@ public class MainActivity extends AppCompatActivity {
                     // Replace Fragment
                     MessagesFragment messagesFragment = new MessagesFragment();
                     fragmentManager.beginTransaction().replace(R.id.frame_container, messagesFragment)
+                            .commit();
+                } else if (tabId == R.id.tab_presentations){
+                    // Set title toolber
+                    txtTitleToolbar.setText("Presentations");
+
+                    // Replace Fragment
+                    PresentationsFragment presentationsFragment = new PresentationsFragment();
+                    fragmentManager.beginTransaction().replace(R.id.frame_container, presentationsFragment)
                             .commit();
                 }
             }

@@ -34,8 +34,10 @@
         <activity
             android:name=".activity.CreateCodeActivity"
             android:theme="@style/SignInTheme" />
-        <activity android:name=".activity.CheckCodeActivity"
-            android:theme="@style/SignInTheme"/>
+        <activity
+            android:name=".activity.CheckCodeActivity"
+            android:theme="@style/SignInTheme" />
+        <activity android:name=".activity.CreateTeamActivity" android:theme="@style/SignInTheme"></activity>
     </application>
 
 </manifest>

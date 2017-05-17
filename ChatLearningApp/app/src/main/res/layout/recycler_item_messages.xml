@@ -41,6 +41,7 @@
         android:layout_marginLeft="16dp"
         android:layout_toRightOf="@+id/img_item_messages"
         android:layout_width="match_parent"
+        android:maxLines="1"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txt_item_message_name"
         android:layout_alignParentEnd="true" />
