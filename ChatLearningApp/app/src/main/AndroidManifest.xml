@@ -37,7 +37,10 @@
         <activity
             android:name=".activity.CheckCodeActivity"
             android:theme="@style/SignInTheme" />
-        <activity android:name=".activity.CreateTeamActivity" android:theme="@style/SignInTheme"></activity>
+        <activity
+            android:name=".activity.CreateTeamActivity"
+            android:theme="@style/SignInTheme" />
+        <activity android:name=".activity.QuesionPresentationActivity"></activity>
     </application>
 
 </manifest>

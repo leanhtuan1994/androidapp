@@ -66,27 +66,40 @@ public class CreateTeamActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                try {
-                   String name = edtName.getText().toString();
+                   final String name = edtName.getText().toString();
 
-                   if (!name.equals("")  && completionView.getObjects() != null){
-                       List<String> listTeamId = new ArrayList<>();
+                   if (!name.equals("")  && completionView.getObjects().size() != 0){
+                       final List<String> listTeamId = new ArrayList<>();
                        for (Object token : completionView.getObjects()){
                            listTeamId.add(token.toString());
                        }
 
+                       dataRef.child("Users").child(fireUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                           @Override
+                           public void onDataChange(DataSnapshot dataSnapshot) {
+                               User user = dataSnapshot.getValue(User.class);
 
-                       String key =  dataRef.child("Team").push().getKey();
-                       Team team = new Team(key, name, listTeamId);
+                               String code = user.getCode();
+                               String key =  dataRef.child("Team").child(code).push().getKey();
+                               Team team = new Team(key, name, listTeamId);
 
-                       dataRef.child("Team").child(key).setValue(team);
+                               dataRef.child("Team").child(code).child(key).setValue(team);
 
+                               Toasty.success(CreateTeamActivity.this, "Create team successful!", Toast.LENGTH_LONG).show();
 
+                               Intent intent = new Intent();
+                               CreateTeamActivity.this.setResult(RESULT_OK, intent);
+                               finish();
+                           }
 
-                       Intent intent = new Intent();
-                       CreateTeamActivity.this.setResult(RESULT_OK, intent);
-                       finish();
+                           @Override
+                           public void onCancelled(DatabaseError databaseError) {}
+                       });
+
+                   } else if (completionView.getObjects().size() == 0){
+                       Toasty.info(CreateTeamActivity.this, "Input student name in this team!", Toast.LENGTH_LONG).show();
                    } else {
-                       Toasty.info(CreateTeamActivity.this, "Something wrong!", Toast.LENGTH_LONG).show();
+                       Toasty.info(CreateTeamActivity.this, "Input team name!", Toast.LENGTH_LONG).show();
                    }
                } catch (Exception e){
                    Toasty.info(CreateTeamActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();

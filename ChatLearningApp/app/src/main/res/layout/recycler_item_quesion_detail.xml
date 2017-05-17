@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="5dp"
+    card_view:cardCornerRadius="4dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_centerVertical="true"
+            android:id="@+id/img_item_question"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            app:civ_border_width="1dp"
+            app:civ_border_color="#BDBDBD"
+            android:src="@drawable/ic_perm_identity_black_48px"/>
+
+        <TextView
+            android:id="@+id/txt_item_question_time"
+            android:layout_marginTop="12dp"
+            android:text="00:00:00"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/img_item_question"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+          />
+
+        <TextView
+            android:id="@+id/txt_item_question"
+            style="@style/Base.TextAppearance.AppCompat.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@+id/img_item_question"
+            android:maxLines="5"
+            android:text="Quesion"
+            android:textAlignment="center" />
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

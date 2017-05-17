@@ -17,6 +17,7 @@ import ttuananhle.android.chatlearningapp.R;
 import ttuananhle.android.chatlearningapp.adapter.RecyclerPresentationAdapter;
 import ttuananhle.android.chatlearningapp.model.Presentation;
 import ttuananhle.android.chatlearningapp.model.Team;
+import ttuananhle.android.chatlearningapp.model.User;
 
 /**
  * Created by leanh on 5/17/2017.
@@ -32,6 +33,8 @@ public class RecyclerPresentationItemViewHolder extends RecyclerView.ViewHolder 
 
     private FirebaseDatabase fireData;
     private DatabaseReference dataRef;
+    private FirebaseAuth fireAuth;
+    private FirebaseUser fireUser;
 
 
     public RecyclerPresentationItemViewHolder(View parent, TextView txtTopic,
@@ -45,6 +48,8 @@ public class RecyclerPresentationItemViewHolder extends RecyclerView.ViewHolder 
 
         fireData = FirebaseDatabase.getInstance();
         dataRef = fireData.getReference();
+        fireAuth = FirebaseAuth.getInstance();
+        fireUser = fireAuth.getCurrentUser();
 
     }
 
@@ -61,12 +66,22 @@ public class RecyclerPresentationItemViewHolder extends RecyclerView.ViewHolder 
         this.txtTopic.setText(topic);
     }
 
-    public void setTxtTeamName(String idTeam){
-        dataRef.child("Team").child(idTeam).addListenerForSingleValueEvent(new ValueEventListener() {
+    public void setTxtTeamName(final String idTeam){
+        dataRef.child("Users").child(fireUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Team team = dataSnapshot.getValue(Team.class);
-                txtTeamName.setText(team.getName());
+               try {
+                   User user = dataSnapshot.getValue(User.class);
+                   dataRef.child("Team").child(user.getCode()).child(idTeam).addListenerForSingleValueEvent(new ValueEventListener() {
+                       @Override
+                       public void onDataChange(DataSnapshot dataSnapshot) {
+                           Team team = dataSnapshot.getValue(Team.class);
+                           txtTeamName.setText(team.getName());
+                       }
+                       @Override
+                       public void onCancelled(DatabaseError databaseError) {}
+                   });
+               } catch (Exception e){}
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}

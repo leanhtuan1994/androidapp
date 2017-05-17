@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ttuananhle.android.chatlearningapp.activity.QuesionPresentationActivity">
+
+    <include
+        android:id="@+id/ictoolbar"
+        layout="@layout/tool_bar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+
+    <TextView
+        style="@style/Base.TextAppearance.AppCompat.Large"
+        android:text="SML"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/txt_quesion_team_name"
+        android:layout_below="@+id/ictoolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <RatingBar
+        android:id="@+id/ratingbar_in_question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:stepSize="0.1"
+        android:layout_below="@+id/txt_quesion_team_name"
+        android:numStars="5" />
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_below="@+id/ratingbar_in_question"
+        android:id="@+id/recycler_quesion_presentation_view"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/relativeLayout">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/relativeLayout">
+
+        <ImageView
+            android:id="@+id/btn_quesion_send"
+            android:src="@drawable/ic_send"
+            android:tint="#E91E63"
+            android:clickable="true"
+            android:layout_centerVertical="true"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:paddingRight="10dp"
+            android:layout_alignParentEnd="true" />
+
+        <EditText
+            android:layout_marginRight="20dp"
+            android:id="@+id/edt_quesion_input"
+            android:hint="input quesion"
+            android:layout_toLeftOf="@+id/btn_quesion_send"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+</RelativeLayout>

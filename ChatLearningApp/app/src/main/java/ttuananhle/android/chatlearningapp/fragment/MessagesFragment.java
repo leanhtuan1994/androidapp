@@ -87,7 +87,6 @@ public class MessagesFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_message_fragment, menu);
-
     }
 
     @Override
@@ -96,6 +95,7 @@ public class MessagesFragment extends Fragment {
         switch (item.getItemId()){
             case R.id.menu_create_message:
                 Log.i("Messages", "Create messages on click");
+
                 break;
 
             default:
@@ -163,19 +163,19 @@ public class MessagesFragment extends Fragment {
                                       Log.i("Seen", item.getSendId());
 
                                       // Send notification
-                                      Intent intent = new Intent(getActivity(), ChatActivity.class);
-                                      intent.putExtra("toId", item.getToId());
+                                     // Intent intent = new Intent(getActivity(), ChatActivity.class);
+                                    //  intent.putExtra("toId", item.getToId());
 
-                                      PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                                      NotificationManager manager = (NotificationManager) getActivity().getSystemService(getActivity().NOTIFICATION_SERVICE);
-                                      NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext())
-                                              .setSmallIcon(R.mipmap.boxchat_logo)
-                                              .setContentTitle(item.getName())
-                                              .setAutoCancel(true)
-                                              .setContentText(item.getMassage())
-                                              .setContentIntent(pendingIntent);
+                                   //   PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                   //   NotificationManager manager = (NotificationManager) getActivity().getSystemService(getActivity().NOTIFICATION_SERVICE);
+                                   //   NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext())
+                                   //           .setSmallIcon(R.mipmap.boxchat_logo)
+                                   //           .setContentTitle(item.getName())
+                                   //           .setAutoCancel(true)
+                                    //          .setContentText(item.getMassage())
+                                    //          .setContentIntent(pendingIntent);
 
-                                      manager.notify(111, builder.build());
+                                    //  manager.notify(111, builder.build());
 
                                   }
                                }
@@ -208,7 +208,7 @@ public class MessagesFragment extends Fragment {
             @Override
            public void onItemClick(MessagePerUserTo item){
                 Log.i("ItemOnclick", item.getName() + "is selected");
-
+                
                 Intent intent = new Intent( view.getContext(), ChatActivity.class);
                 intent.putExtra("toId", item.getToId());
                 startActivity(intent);
