@@ -52,6 +52,7 @@ import ttuananhle.android.chatlearningapp.R;
 import ttuananhle.android.chatlearningapp.activity.CreateCodeActivity;
 import ttuananhle.android.chatlearningapp.activity.CreateTeamActivity;
 import ttuananhle.android.chatlearningapp.activity.SignInActivity;
+import ttuananhle.android.chatlearningapp.activity.TeamChatActivity;
 import ttuananhle.android.chatlearningapp.adapter.DividerItemDecotation;
 import ttuananhle.android.chatlearningapp.adapter.RecyclerSetingAdapter;
 import ttuananhle.android.chatlearningapp.model.Setting;
@@ -83,7 +84,8 @@ public class SettingsFragment extends Fragment {
 
     public static final int CREATE_CODE = 1;
     public static final int CREATE_NEWTEAM = 2;
-    public static final int SIGN_OUT = 3;
+    public static final int SIGN_OUT = 4;
+    public static final int TEAM_CHAT = 3;
 
     public static final int REQUEST_CREATE_NEWTEAM = 2323;
 
@@ -107,7 +109,7 @@ public class SettingsFragment extends Fragment {
                 R.drawable.signout)));
 
         Query query = dataRef.child("Users").child(fireUser.getUid());
-        query.addValueEventListener(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(User.class);
@@ -124,6 +126,17 @@ public class SettingsFragment extends Fragment {
 
                     settingList.add( new Setting(CREATE_NEWTEAM, "Create Team", BitmapFactory.decodeResource(getResources(),
                             R.drawable.presentation)));
+
+                    Collections.sort(settingList, new Comparator<Setting>() {
+                        @Override
+                        public int compare(Setting o1, Setting o2) {
+                            return String.valueOf(o1.getId()).compareTo(String.valueOf(o2.getId()));
+                        }
+                    });
+                    recyclerSetingAdapter.notifyDataSetChanged();
+                } else {
+                    settingList.add( new Setting( TEAM_CHAT, "Team Chat", BitmapFactory.decodeResource(getResources(),
+                            R.drawable.ic_chat_team)));
 
                     Collections.sort(settingList, new Comparator<Setting>() {
                         @Override
@@ -206,6 +219,28 @@ public class SettingsFragment extends Fragment {
                                 });
                                 alertDialog.show();
                             }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {}
+                    });
+                } else if ( item.getId() == TEAM_CHAT){
+                    dataRef.child("Users").child(fireUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            try {
+                                User user = dataSnapshot.getValue(User.class);
+                                if (!user.getTeam().equals("")){
+                                    String team = user.getTeam();
+                                    String code = user.getCode();
+                                    Intent intent = new Intent(getContext(), TeamChatActivity.class);
+                                    intent.putExtra("TEAM", team);
+                                    intent.putExtra("CODE", code);
+                                    startActivity(intent);
+                                } else {
+                                    Toasty.info(getContext(), "You haven't team!", Toast.LENGTH_LONG).show();
+                                }
+
+                            }catch (Exception e){}
                         }
                         @Override
                         public void onCancelled(DatabaseError databaseError) {}

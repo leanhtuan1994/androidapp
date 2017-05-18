@@ -79,6 +79,7 @@ public class PresentationsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         getListPresentation();
+
     }
 
     private void initRecyclerView(){
@@ -92,7 +93,6 @@ public class PresentationsFragment extends Fragment {
                 startActivity(intent);
             }
         });
-
         recyclerView.setAdapter(presentationAdapter);
     }
 

@@ -12,6 +12,8 @@ public class User {
     private String  photoUrl;
     private boolean isTeacher = false;
     private String  code;
+    private String  team;
+    private boolean haveMessage = false;
 
     public User(){
 
@@ -22,11 +24,13 @@ public class User {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.team = "";
     }
 
     public User(String name, String email){
         this.name = name;
         this.email = email;
+        this.team = "";
     }
 
     public User(String id, String name, String email, String password, String photoUrl) {
@@ -35,6 +39,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.photoUrl = photoUrl;
+        this.team = "";
     }
 
     public User(String id, String name, String email, String password, String photoUrl, boolean isTeacher) {
@@ -44,6 +49,7 @@ public class User {
         this.password = password;
         this.photoUrl = photoUrl;
         this.isTeacher = isTeacher;
+        this.team = "";
     }
 
     public User(String id, String name, String email, String password, String photoUrl, boolean isTeacher, String code) {
@@ -54,6 +60,7 @@ public class User {
         this.photoUrl = photoUrl;
         this.isTeacher = isTeacher;
         this.code = code;
+        this.team = "";
     }
 
 
@@ -111,6 +118,22 @@ public class User {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getTeam() {
+        return team;
+    }
+
+    public void setTeam(String idTeam) {
+        this.team = idTeam;
+    }
+
+    public boolean isHaveMessage() {
+        return haveMessage;
+    }
+
+    public void setHaveMessage(boolean haveMessage) {
+        this.haveMessage = haveMessage;
     }
 
     @Override

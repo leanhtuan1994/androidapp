@@ -108,12 +108,16 @@ public class RecyclerMessagesItemViewHolder extends RecyclerView.ViewHolder {
         setTxtTime(userTo.getTime());
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+
         if(!userTo.getSendId().equals(firebaseUser.getUid())
                 && !userTo.isSeen()){
             itemView.setBackgroundResource(R.color.colorBGMessage);
         } else {
             itemView.setBackgroundResource(R.color.colorWhite);
         }
+
+
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

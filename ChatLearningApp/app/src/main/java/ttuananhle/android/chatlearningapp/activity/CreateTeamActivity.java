@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,8 +86,12 @@ public class CreateTeamActivity extends AppCompatActivity {
 
                                dataRef.child("Team").child(code).child(key).setValue(team);
 
-                               Toasty.success(CreateTeamActivity.this, "Create team successful!", Toast.LENGTH_LONG).show();
+                               // Save id team for user
+                               for (String id : listTeamId){
+                                   dataRef.child("Users").child(id).child("team").setValue(key);
+                               }
 
+                               Toasty.success(CreateTeamActivity.this, "Create team successful!", Toast.LENGTH_LONG).show();
                                Intent intent = new Intent();
                                CreateTeamActivity.this.setResult(RESULT_OK, intent);
                                finish();
@@ -133,10 +138,17 @@ public class CreateTeamActivity extends AppCompatActivity {
                            dataRef.child("Users").child(dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                                @Override
                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                   User student = dataSnapshot.getValue(User.class);
+                                  try {
+                                      User student = dataSnapshot.getValue(User.class);
 
-                                   userList.add(student);
-                                   adapter.notifyDataSetChanged();
+                                      if(student.getTeam().equals("") && !student.isTeacher()){
+                                          Log.i("Team", student.getName());
+                                          userList.add(student);
+                                          adapter.notifyDataSetChanged();
+                                      }
+
+                                  } catch (Exception e){}
+
                                }
 
                                @Override

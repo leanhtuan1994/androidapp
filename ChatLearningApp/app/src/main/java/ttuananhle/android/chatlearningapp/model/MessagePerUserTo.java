@@ -12,9 +12,11 @@ public class MessagePerUserTo {
     private String toId;
     private boolean seen;
     private String sendId;
+    private boolean isTeam;
+    private String code;
 
     public MessagePerUserTo(){
-
+        this.isTeam = false;
     }
     public MessagePerUserTo(String toId, String name, String massage, String photoUrl, String time) {
         this.toId = toId;
@@ -22,6 +24,7 @@ public class MessagePerUserTo {
         this.massage = massage;
         this.photoUrl = photoUrl;
         this.time = time;
+        this.isTeam = false;
     }
     public MessagePerUserTo(String toId, String name, String massage, String photoUrl, String time, boolean seen, String sendId) {
         this.toId = toId;
@@ -31,6 +34,7 @@ public class MessagePerUserTo {
         this.time = time;
         this.seen = seen;
         this.sendId = sendId;
+        this.isTeam = false;
     }
 
 
@@ -89,5 +93,21 @@ public class MessagePerUserTo {
 
     public void setSendId(String sendId) {
         this.sendId = sendId;
+    }
+
+    public boolean isTeam() {
+        return isTeam;
+    }
+
+    public void setTeam(boolean team) {
+        isTeam = team;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

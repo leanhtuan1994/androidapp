@@ -39,9 +39,12 @@ import java.util.Map;
 
 import ttuananhle.android.chatlearningapp.R;
 import ttuananhle.android.chatlearningapp.activity.ChatActivity;
+import ttuananhle.android.chatlearningapp.activity.MainActivity;
+import ttuananhle.android.chatlearningapp.activity.TeamChatActivity;
 import ttuananhle.android.chatlearningapp.adapter.RecyclerMessagesAdapter;
 import ttuananhle.android.chatlearningapp.model.Message;
 import ttuananhle.android.chatlearningapp.model.MessagePerUserTo;
+import ttuananhle.android.chatlearningapp.model.Team;
 import ttuananhle.android.chatlearningapp.model.User;
 
 /**
@@ -81,6 +84,7 @@ public class MessagesFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        userToList.clear();
         initListMessage();
     }
 
@@ -95,7 +99,9 @@ public class MessagesFragment extends Fragment {
         switch (item.getItemId()){
             case R.id.menu_create_message:
                 Log.i("Messages", "Create messages on click");
-
+                ContactsFragment contactsFragment = new ContactsFragment();
+                getFragmentManager().beginTransaction().replace(R.id.frame_container,contactsFragment )
+                        .commit();
                 break;
 
             default:
@@ -112,6 +118,7 @@ public class MessagesFragment extends Fragment {
 
     private void initListMessage(){
         DatabaseReference dataUserMessageRef = dataRef.child("User-Messages").child(fireUser.getUid());
+
         dataUserMessageRef.addChildEventListener(new ChildEventListener() {
            @Override
            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -122,69 +129,136 @@ public class MessagesFragment extends Fragment {
                    @Override
                    public void onDataChange(DataSnapshot dataSnapshot) {
                        Log.i("MessagePer", dataSnapshot.toString());
-                       final Message message = dataSnapshot.getValue(Message.class);
-                       String idChatUser = message.getToId();
+                       try {
+                           final Message message = dataSnapshot.getValue(Message.class);
+                           if( message != null){
+                               String idChatUser = message.getToId();
 
-                       if ( message.getToId().equals(fireUser.getUid())) {
-                           idChatUser = message.getFromId();
-                       }
-                       dataRef.child("Users").child(idChatUser).addValueEventListener(new ValueEventListener() {
-                           @Override
-                           public void onDataChange(DataSnapshot dataSnapshot) {
-                               Log.i("toUser", dataSnapshot.getKey());
-                               User chatUser = dataSnapshot.getValue(User.class);
-
-                               MessagePerUserTo messagePer = new
-                                       MessagePerUserTo( chatUser.getId(),chatUser.getName(), message.getText(),
-                                       chatUser.getPhotoUrl(), message.getTime(), message.isSeen(), message.getFromId());
-
-                               messageMap.put(chatUser.getId(), messagePer);
-                               Log.i("Check", "" + messageMap.size());
-                               userToList.clear();
-                               for( Map.Entry<String, MessagePerUserTo> entry : messageMap.entrySet()){
-                                   //  add message to list
-                                     userToList.add(entry.getValue());
+                               if ( message.getToId().equals(fireUser.getUid())) {
+                                   idChatUser = message.getFromId();
                                }
 
-                               // Sort list messages by time
-                               Collections.sort(userToList, new Comparator<MessagePerUserTo>() {
-                                     @Override
-                                     public int compare(MessagePerUserTo o1, MessagePerUserTo o2) {
-                                         return o1.getTime().compareTo(o2.getTime());
-                                     }
+
+                               dataRef.child("Users").child(idChatUser).addValueEventListener(new ValueEventListener() {
+                                   @Override
+                                   public void onDataChange(DataSnapshot dataSnapshot) {
+                                       Log.i("toUser", dataSnapshot.getKey());
+                                       User chatUser = dataSnapshot.getValue(User.class);
+
+                                       final MessagePerUserTo messagePer = new
+                                               MessagePerUserTo( chatUser.getId(),chatUser.getName(), message.getText(),
+                                               chatUser.getPhotoUrl(), message.getTime(), message.isSeen(), message.getFromId());
+
+                                       messageMap.put(chatUser.getId(), messagePer);
+                                       Log.i("Check", "" + messageMap.size());
+
+                                       dataRef.child("Users").child(fireUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                           @Override
+                                           public void onDataChange(DataSnapshot dataSnapshot) {
+                                               try {
+                                                   final User user = dataSnapshot.getValue(User.class);
+                                                   if (!user.getTeam().equals("")){
+                                                       dataRef.child("Team").child(user.getCode()).child(user.getTeam())
+                                                               .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                   @Override
+                                                                   public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                       final Team team = dataSnapshot.getValue(Team.class);
+
+                                                                       Query query = dataRef.child("Team-Messages")
+                                                                               .child(user.getCode())
+                                                                               .child(user.getTeam())
+                                                                               .limitToLast(1);
+
+                                                                       query.addChildEventListener(new ChildEventListener() {
+                                                                           @Override
+                                                                           public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                                                                               String keyMessage = dataSnapshot.getKey();
+                                                                               Log.i("KEY", keyMessage);
+
+                                                                               dataRef.child("Messages").child(keyMessage).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                   @Override
+                                                                                   public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                                       Message messageTeam = dataSnapshot.getValue(Message.class);
+
+                                                                                       MessagePerUserTo perTeam =
+                                                                                               new MessagePerUserTo(team.getId(), team.getName(),
+                                                                                                       messageTeam.getText(), "", messageTeam.getTime(), messageTeam.isSeen(), messageTeam.getFromId());
+
+                                                                                       perTeam.setTeam(true);
+                                                                                       perTeam.setCode(user.getCode());
+
+                                                                                       messageMap.put("TEAM", perTeam);
+
+                                                                                       userToList.clear();
+                                                                                       for( Map.Entry<String, MessagePerUserTo> entry : messageMap.entrySet()){
+                                                                                           //  add message to list
+                                                                                           userToList.add(entry.getValue());
+                                                                                       }
+                                                                                       // Sort list messages by time
+                                                                                       Collections.sort(userToList, new Comparator<MessagePerUserTo>() {
+                                                                                           @Override
+                                                                                           public int compare(MessagePerUserTo o1, MessagePerUserTo o2) {
+                                                                                               return o1.getTime().compareTo(o2.getTime());
+                                                                                           }
+                                                                                       });
+
+                                                                                       // Reverse data
+                                                                                       Collections.reverse(userToList);
+                                                                                       messagesAdapter.notifyDataSetChanged();
+                                                                                   }
+                                                                                   @Override
+                                                                                   public void onCancelled(DatabaseError databaseError) {}
+                                                                               });
+                                                                           }
+
+                                                                           @Override
+                                                                           public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+                                                                           @Override
+                                                                           public void onChildRemoved(DataSnapshot dataSnapshot) {}
+                                                                           @Override
+                                                                           public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+                                                                           @Override
+                                                                           public void onCancelled(DatabaseError databaseError) {}
+                                                                       });
+                                                                   }
+                                                                   @Override
+                                                                   public void onCancelled(DatabaseError databaseError) {}
+                                                               });
+
+                                                   } else {
+                                                       userToList.clear();
+                                                       for( Map.Entry<String, MessagePerUserTo> entry : messageMap.entrySet()){
+                                                           //  add message to list
+                                                           userToList.add(entry.getValue());
+                                                       }
+                                                       // Sort list messages by time
+                                                       Collections.sort(userToList, new Comparator<MessagePerUserTo>() {
+                                                           @Override
+                                                           public int compare(MessagePerUserTo o1, MessagePerUserTo o2) {
+                                                               return o1.getTime().compareTo(o2.getTime());
+                                                           }
+                                                       });
+
+                                                       // Reverse data
+                                                       Collections.reverse(userToList);
+                                                       messagesAdapter.notifyDataSetChanged();
+                                                   }
+
+                                               }catch (Exception e){
+
+                                               }
+                                           }
+                                           @Override
+                                           public void onCancelled(DatabaseError databaseError) {}
+                                       });
+                                   }
+                                   @Override
+                                   public void onCancelled(DatabaseError databaseError) {}
                                });
+                           } else {
 
-                               // Reverse data
-                               Collections.reverse(userToList);
-
-                               // Check seen new message
-                               for ( MessagePerUserTo item: userToList) {
-                                  if ( !item.getSendId().equals(fireUser.getUid()) && !item.isSeen()){
-                                      Log.i("Seen", item.getSendId());
-
-                                      // Send notification
-                                     // Intent intent = new Intent(getActivity(), ChatActivity.class);
-                                    //  intent.putExtra("toId", item.getToId());
-
-                                   //   PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                                   //   NotificationManager manager = (NotificationManager) getActivity().getSystemService(getActivity().NOTIFICATION_SERVICE);
-                                   //   NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext())
-                                   //           .setSmallIcon(R.mipmap.boxchat_logo)
-                                   //           .setContentTitle(item.getName())
-                                   //           .setAutoCancel(true)
-                                    //          .setContentText(item.getMassage())
-                                    //          .setContentIntent(pendingIntent);
-
-                                    //  manager.notify(111, builder.build());
-
-                                  }
-                               }
-
-                               messagesAdapter.notifyDataSetChanged();
                            }
-                           @Override
-                           public void onCancelled(DatabaseError databaseError) {}
-                       });
+                       } catch (Exception e){}
                    }
                    @Override
                    public void onCancelled(DatabaseError databaseError) {}
@@ -199,6 +273,118 @@ public class MessagesFragment extends Fragment {
            @Override
            public void onCancelled(DatabaseError databaseError) {}
        });
+
+        dataRef.child("Users").child(fireUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try {
+                    User myUser = dataSnapshot.getValue(User.class);
+                    if (!myUser.isHaveMessage()){
+                        dataRef.child("Users").child(fireUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                try {
+                                    final User user = dataSnapshot.getValue(User.class);
+                                    if (!user.getTeam().equals("")){
+                                        dataRef.child("Team").child(user.getCode()).child(user.getTeam())
+                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                        final Team team = dataSnapshot.getValue(Team.class);
+
+                                                        Query query = dataRef.child("Team-Messages")
+                                                                .child(user.getCode())
+                                                                .child(user.getTeam())
+                                                                .limitToLast(1);
+
+                                                        query.addChildEventListener(new ChildEventListener() {
+                                                            @Override
+                                                            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                                                                String keyMessage = dataSnapshot.getKey();
+                                                                Log.i("KEY", keyMessage);
+
+                                                                dataRef.child("Messages").child(keyMessage).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                        Message messageTeam = dataSnapshot.getValue(Message.class);
+
+                                                                        MessagePerUserTo perTeam =
+                                                                                new MessagePerUserTo(team.getId(), team.getName(),
+                                                                                        messageTeam.getText(), "", messageTeam.getTime(), messageTeam.isSeen(), messageTeam.getFromId());
+
+                                                                        perTeam.setTeam(true);
+                                                                        perTeam.setCode(user.getCode());
+
+                                                                        messageMap.put("TEAM", perTeam);
+
+                                                                        userToList.clear();
+                                                                        for( Map.Entry<String, MessagePerUserTo> entry : messageMap.entrySet()){
+                                                                            //  add message to list
+                                                                            userToList.add(entry.getValue());
+                                                                        }
+                                                                        // Sort list messages by time
+                                                                        Collections.sort(userToList, new Comparator<MessagePerUserTo>() {
+                                                                            @Override
+                                                                            public int compare(MessagePerUserTo o1, MessagePerUserTo o2) {
+                                                                                return o1.getTime().compareTo(o2.getTime());
+                                                                            }
+                                                                        });
+
+                                                                        // Reverse data
+                                                                        Collections.reverse(userToList);
+                                                                        messagesAdapter.notifyDataSetChanged();
+                                                                    }
+                                                                    @Override
+                                                                    public void onCancelled(DatabaseError databaseError) {}
+                                                                });
+                                                            }
+
+                                                            @Override
+                                                            public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+                                                            @Override
+                                                            public void onChildRemoved(DataSnapshot dataSnapshot) {}
+                                                            @Override
+                                                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+                                                            @Override
+                                                            public void onCancelled(DatabaseError databaseError) {}
+                                                        });
+                                                    }
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {}
+                                                });
+
+                                    } else {
+                                        userToList.clear();
+                                        for( Map.Entry<String, MessagePerUserTo> entry : messageMap.entrySet()){
+                                            //  add message to list
+                                            userToList.add(entry.getValue());
+                                        }
+                                        // Sort list messages by time
+                                        Collections.sort(userToList, new Comparator<MessagePerUserTo>() {
+                                            @Override
+                                            public int compare(MessagePerUserTo o1, MessagePerUserTo o2) {
+                                                return o1.getTime().compareTo(o2.getTime());
+                                            }
+                                        });
+
+                                        // Reverse data
+                                        Collections.reverse(userToList);
+                                        messagesAdapter.notifyDataSetChanged();
+                                    }
+
+                                }catch (Exception e){
+
+                                }
+                            }
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {}
+                        });
+                    }
+                } catch (Exception e){}
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
     }
 
 
@@ -208,10 +394,18 @@ public class MessagesFragment extends Fragment {
             @Override
            public void onItemClick(MessagePerUserTo item){
                 Log.i("ItemOnclick", item.getName() + "is selected");
-                
-                Intent intent = new Intent( view.getContext(), ChatActivity.class);
-                intent.putExtra("toId", item.getToId());
-                startActivity(intent);
+                if (item.isTeam()){
+                    String teamId = item.getToId();
+                    String code = item.getCode();
+                    Intent intent = new Intent(getContext(), TeamChatActivity.class);
+                    intent.putExtra("TEAM", teamId);
+                    intent.putExtra("CODE", code);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent( view.getContext(), ChatActivity.class);
+                    intent.putExtra("toId", item.getToId());
+                    startActivity(intent);
+                }
             }
         });
 

@@ -108,6 +108,12 @@ public class ChatActivity extends AppCompatActivity {
                     DatabaseReference dataToUserRef = dataRef.child("User-Messages").child(toIdUser);
                     dataToUserRef.child(key).setValue(2);
 
+                    // Set have message
+
+                    dataRef.child("Users").child(fireUser.getUid()).child("haveMessage").setValue(true);
+                    dataRef.child("Users").child(toIdUser).child("haveMessage").setValue(true);
+
+
                     // Set edit text;
                     edtText.setText("");
                 }

@@ -40,7 +40,8 @@
         <activity
             android:name=".activity.CreateTeamActivity"
             android:theme="@style/SignInTheme" />
-        <activity android:name=".activity.QuesionPresentationActivity"></activity>
+        <activity android:name=".activity.QuesionPresentationActivity" />
+        <activity android:name=".activity.TeamChatActivity"></activity>
     </application>
 
 </manifest>
