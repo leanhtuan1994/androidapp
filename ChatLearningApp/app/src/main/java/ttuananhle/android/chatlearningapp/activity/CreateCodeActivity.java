@@ -64,9 +64,8 @@ public class CreateCodeActivity extends AppCompatActivity {
                     if (code.equals("")) return;
                     dataRef.child("Users").child(fireUser.getUid()).child("code").setValue(code);
 
-                    Map<String, String> codeMap = new HashMap<>();
-                    codeMap.put(code, fireUser.getUid());
-                    dataRef.child("Code").setValue(codeMap);
+                    // Add Code in firedata
+                    dataRef.child("Code").child(code).setValue(fireUser.getUid());
 
                     // Add user in code data
                     dataRef.child("Code").child(code).child(fireUser.getUid()).setValue(1);
@@ -83,7 +82,7 @@ public class CreateCodeActivity extends AppCompatActivity {
                     });
                     alertDialog.show();
 
-                } catch (Exception e){
+                } catch (NumberFormatException e){
                     Toasty.info(CreateCodeActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     edtCode.setText("");
                 }

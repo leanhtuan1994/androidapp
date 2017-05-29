@@ -78,14 +78,16 @@ public class ContactsFragment extends Fragment {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (!dataSnapshot.getKey().equals(fireUser.getUid())){
-                                    userList.add( dataSnapshot.getValue( User.class));
+                                    try {
+                                        userList.add( dataSnapshot.getValue( User.class));
 
-                                    Collections.sort(userList, new Comparator<User>() {
-                                        @Override
-                                        public int compare(User o1, User o2) {
-                                            return o1.getName().compareTo(o2.getName());
-                                        }
-                                    });
+                                        Collections.sort(userList, new Comparator<User>() {
+                                            @Override
+                                            public int compare(User o1, User o2) {
+                                                return o1.getName().compareTo(o2.getName());
+                                            }
+                                        });
+                                    } catch (Exception e){}
 
                                     // notify data changed for recycler view
                                     recyclerContactAdapter.notifyDataSetChanged();

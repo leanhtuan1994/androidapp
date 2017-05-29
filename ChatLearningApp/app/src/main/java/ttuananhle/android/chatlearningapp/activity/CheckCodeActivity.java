@@ -3,6 +3,7 @@ package ttuananhle.android.chatlearningapp.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,8 +16,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import es.dmoral.toasty.Toasty;
@@ -63,6 +67,20 @@ public class CheckCodeActivity extends AppCompatActivity {
                 final String code = edtCheckCode.getText().toString();
                 if (code.equals("")) return;
                 try {
+                    dataRef.child("Code").child(code).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if ( dataSnapshot.getValue() == null){
+                                Log.i("CheckCode", "error");
+                                Toasty.info(CheckCodeActivity.this, "Code Error", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {}
+                    });
+
+
+                    //////////////////////////////////////////////////////////////////////
                     dataRef.child("Code").addChildEventListener(new ChildEventListener() {
                         @Override
                         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -91,6 +109,8 @@ public class CheckCodeActivity extends AppCompatActivity {
                 }catch (Exception e){
                     Toasty.info(CheckCodeActivity.this, e.getMessage() , Toast.LENGTH_LONG).show();
                 }
+
+
             }
         });
     }

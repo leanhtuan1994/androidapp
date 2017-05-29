@@ -107,17 +107,16 @@ public class QuesionPresentationActivity extends AppCompatActivity {
                 });
 
 
-
                 if(!user.isTeacher()){
                     ratingBar.setIsIndicator(true);
                 } else {
                     ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-                    @Override
-                    public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                        Log.i("Rating", rating + "");
-                        dataRef.child("Presentations").child(user.getCode()).child(PRESENTATION_ID).child("rating").setValue(rating);
-                    }
-                });
+                        @Override
+                        public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                            Log.i("Rating", rating + "");
+                            dataRef.child("Presentations").child(user.getCode()).child(PRESENTATION_ID).child("rating").setValue(rating);
+                        }
+                    });
                 }
             }
             @Override
